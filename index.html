@@ -1,0 +1,2871 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام الأقساط</title>
+
+<!-- PWA -->
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#1a6fd4">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="نظام الأقساط">
+<link rel="apple-touch-icon" href="./icons/icon-192.svg">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="نظام الأقساط">
+<meta name="msapplication-TileColor" content="#1a6fd4">
+<meta name="msapplication-TileImage" content="./icons/icon-192.svg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1a6fd4;
+    --primary-light: #3d8ef0;
+    --primary-dark: #0f4fa3;
+    --accent: #f59e0b;
+    --accent2: #10b981;
+    --danger: #ef4444;
+    --warning: #f97316;
+    --success: #22c55e;
+    --sky: #0ea5e9;
+    --purple: #8b5cf6;
+
+    --bg: #e8f0fe;
+    --glass: rgba(255,255,255,0.65);
+    --glass2: rgba(255,255,255,0.45);
+    --glass3: rgba(255,255,255,0.25);
+    --border: rgba(255,255,255,0.8);
+    --border2: rgba(200,220,255,0.5);
+    --shadow: 0 8px 32px rgba(26,111,212,0.12);
+    --shadow2: 0 4px 16px rgba(26,111,212,0.08);
+    --text: #0f172a;
+    --text2: #334155;
+    --text3: #64748b;
+    --text4: #94a3b8;
+
+    --radius: 20px;
+    --radius2: 14px;
+    --radius3: 10px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Tajawal', 'Cairo', sans-serif;
+    background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 25%, #f0fdf4 50%, #fef9c3 75%, #fff7ed 100%);
+    min-height: 100vh;
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(26,111,212,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 80%, rgba(16,185,129,0.1) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 50% 50%, rgba(245,158,11,0.06) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ====== LAYOUT ====== */
+  #app { position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+  /* ====== TOPBAR ====== */
+  .topbar {
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 68px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 24px rgba(26,111,212,0.1);
+  }
+
+  .topbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-icon {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--primary), var(--sky));
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 4px 14px rgba(26,111,212,0.35);
+  }
+
+  .logo-text { font-size: 20px; font-weight: 900; color: var(--primary); letter-spacing: -0.5px; }
+  .logo-sub { font-size: 11px; color: var(--text3); font-weight: 400; }
+
+  .topbar-actions { display: flex; align-items: center; gap: 10px; }
+
+  .topbar-btn {
+    height: 38px; padding: 0 16px;
+    background: var(--glass2);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 14px; font-weight: 600;
+    color: var(--text2);
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    transition: all 0.2s;
+    backdrop-filter: blur(10px);
+  }
+
+  .topbar-btn:hover { background: var(--glass); border-color: var(--primary-light); color: var(--primary); }
+  .topbar-btn.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+  .topbar-btn.primary:hover { background: var(--primary-dark); }
+
+  /* ====== STATS ====== */
+  .stats-bar {
+    padding: 20px 24px 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+  }
+
+  .stat-card {
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius2);
+    padding: 18px 20px;
+    box-shadow: var(--shadow2);
+    display: flex; align-items: center; gap: 14px;
+    transition: all 0.25s;
+    cursor: default;
+  }
+
+  .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+
+  .stat-icon {
+    width: 48px; height: 48px; border-radius: 13px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+
+  .stat-icon.blue { background: rgba(26,111,212,0.15); }
+  .stat-icon.green { background: rgba(34,197,94,0.15); }
+  .stat-icon.amber { background: rgba(245,158,11,0.15); }
+  .stat-icon.red { background: rgba(239,68,68,0.15); }
+  .stat-icon.purple { background: rgba(139,92,246,0.15); }
+  .stat-icon.sky { background: rgba(14,165,233,0.15); }
+
+  .stat-info { flex: 1; min-width: 0; }
+  .stat-label { font-size: 12px; color: var(--text3); font-weight: 500; white-space: nowrap; }
+  .stat-value { font-size: 22px; font-weight: 800; color: var(--text); line-height: 1.2; }
+  .stat-sub { font-size: 11px; color: var(--text4); margin-top: 2px; }
+
+  /* ====== MAIN CONTENT ====== */
+  .main { flex: 1; padding: 20px 24px 40px; }
+
+  /* ====== TABS ====== */
+  .tabs-nav {
+    background: var(--glass2);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius2);
+    padding: 5px;
+    display: inline-flex;
+    gap: 4px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow2);
+  }
+
+  .tab-btn {
+    height: 38px; padding: 0 18px;
+    border: none; border-radius: 10px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text3);
+    background: transparent;
+    display: flex; align-items: center; gap: 7px;
+  }
+
+  .tab-btn.active {
+    background: var(--glass);
+    color: var(--primary);
+    box-shadow: 0 2px 12px rgba(26,111,212,0.15);
+    border: 1px solid var(--border);
+  }
+
+  .tab-btn:hover:not(.active) { color: var(--text); background: rgba(255,255,255,0.3); }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ====== TOOLBAR ====== */
+  .toolbar {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 18px; flex-wrap: wrap;
+  }
+
+  .search-wrap {
+    flex: 1; min-width: 200px; max-width: 360px;
+    position: relative;
+  }
+
+  .search-input {
+    width: 100%; height: 42px; padding: 0 16px 0 42px;
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 14px; color: var(--text);
+    transition: all 0.2s;
+    outline: none;
+  }
+
+  .search-input:focus { border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(26,111,212,0.1); }
+  .search-input::placeholder { color: var(--text4); }
+
+  .search-icon {
+    position: absolute; left: 13px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text4); font-size: 16px; pointer-events: none;
+  }
+
+  .select-filter {
+    height: 42px; padding: 0 14px;
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 14px; color: var(--text);
+    cursor: pointer; outline: none;
+    transition: all 0.2s;
+  }
+
+  .select-filter:focus { border-color: var(--primary-light); }
+
+  .btn {
+    height: 42px; padding: 0 18px;
+    border: none; border-radius: 12px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 8px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(26,111,212,0.3); }
+  .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+  .btn-success { background: var(--success); color: #fff; box-shadow: 0 4px 12px rgba(34,197,94,0.3); }
+  .btn-success:hover { background: #16a34a; }
+  .btn-warning { background: var(--warning); color: #fff; }
+  .btn-danger { background: var(--danger); color: #fff; }
+  .btn-ghost { background: var(--glass2); border: 1px solid var(--border2); color: var(--text2); backdrop-filter: blur(10px); }
+  .btn-ghost:hover { background: var(--glass); }
+  .btn-sm { height: 32px; padding: 0 12px; font-size: 13px; border-radius: 9px; }
+
+  /* ====== TABLE ====== */
+  .table-wrap {
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .data-table { width: 100%; border-collapse: collapse; }
+
+  .data-table thead tr {
+    background: rgba(26,111,212,0.07);
+    border-bottom: 1px solid var(--border2);
+  }
+
+  .data-table th {
+    padding: 13px 16px;
+    font-size: 12px; font-weight: 700;
+    color: var(--text3); text-align: right;
+    white-space: nowrap; letter-spacing: 0.3px;
+    text-transform: uppercase;
+  }
+
+  .data-table tbody tr {
+    border-bottom: 1px solid rgba(200,220,255,0.2);
+    transition: background 0.15s;
+  }
+
+  .data-table tbody tr:last-child { border-bottom: none; }
+  .data-table tbody tr:hover { background: rgba(26,111,212,0.04); }
+
+  .data-table td {
+    padding: 13px 16px;
+    font-size: 14px; color: var(--text2);
+    vertical-align: middle;
+  }
+
+  .data-table td:last-child { text-align: left; }
+
+  /* ====== BADGE ====== */
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; border-radius: 20px;
+    font-size: 12px; font-weight: 700;
+  }
+
+  .badge-success { background: rgba(34,197,94,0.15); color: #16a34a; }
+  .badge-danger { background: rgba(239,68,68,0.15); color: #dc2626; }
+  .badge-warning { background: rgba(245,158,11,0.15); color: #d97706; }
+  .badge-info { background: rgba(14,165,233,0.15); color: #0284c7; }
+  .badge-gray { background: rgba(148,163,184,0.15); color: #64748b; }
+  .badge-purple { background: rgba(139,92,246,0.15); color: #7c3aed; }
+
+  /* ====== AVATAR ====== */
+  .avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--sky));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 14px; font-weight: 700; flex-shrink: 0;
+  }
+
+  .customer-cell { display: flex; align-items: center; gap: 10px; }
+  .customer-name { font-weight: 600; color: var(--text); }
+  .customer-phone { font-size: 12px; color: var(--text4); direction: ltr; }
+
+  /* ====== PROGRESS ====== */
+  .progress-wrap { display: flex; align-items: center; gap: 8px; }
+
+  .progress-bar {
+    flex: 1; height: 7px; background: rgba(200,220,255,0.4);
+    border-radius: 10px; overflow: hidden; min-width: 70px;
+  }
+
+  .progress-fill {
+    height: 100%; border-radius: 10px;
+    background: linear-gradient(90deg, var(--primary), var(--sky));
+    transition: width 0.4s;
+  }
+
+  .progress-fill.danger { background: linear-gradient(90deg, var(--danger), var(--warning)); }
+  .progress-fill.success { background: linear-gradient(90deg, var(--success), var(--accent2)); }
+
+  .progress-text { font-size: 12px; font-weight: 700; color: var(--text3); white-space: nowrap; }
+
+  /* ====== MODAL ====== */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(15,23,42,0.45);
+    backdrop-filter: blur(6px);
+    z-index: 1000;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s;
+  }
+
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(30px);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    box-shadow: 0 24px 80px rgba(26,111,212,0.2);
+    width: 100%; max-width: 680px;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: scale(0.95) translateY(10px);
+    transition: transform 0.25s;
+  }
+
+  .modal-overlay.open .modal { transform: scale(1) translateY(0); }
+  .modal.wide { max-width: 860px; }
+
+  .modal-header {
+    padding: 24px 28px 0;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--border2);
+    padding-bottom: 18px;
+  }
+
+  .modal-title { font-size: 20px; font-weight: 800; color: var(--text); }
+  .modal-sub { font-size: 13px; color: var(--text3); margin-top: 3px; }
+
+  .modal-close {
+    width: 36px; height: 36px; border-radius: 10px;
+    border: 1px solid var(--border2);
+    background: var(--glass2); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: var(--text3);
+    transition: all 0.2s;
+  }
+
+  .modal-close:hover { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+  .modal-body { padding: 24px 28px; }
+  .modal-footer {
+    padding: 18px 28px 24px;
+    display: flex; justify-content: flex-end; gap: 10px;
+    border-top: 1px solid var(--border2);
+  }
+
+  /* ====== FORM ====== */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-grid.cols3 { grid-template-columns: 1fr 1fr 1fr; }
+  .form-group { display: flex; flex-direction: column; gap: 7px; }
+  .form-group.full { grid-column: 1 / -1; }
+
+  .form-label { font-size: 13px; font-weight: 700; color: var(--text2); }
+
+  .form-control {
+    height: 44px; padding: 0 14px;
+    background: rgba(255,255,255,0.7);
+    border: 1.5px solid var(--border2);
+    border-radius: 12px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 14px; color: var(--text);
+    outline: none; transition: all 0.2s;
+  }
+
+  .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,111,212,0.1); background: #fff; }
+  .form-control::placeholder { color: var(--text4); }
+
+  textarea.form-control { height: auto; padding: 12px 14px; resize: vertical; min-height: 80px; }
+
+  .form-section {
+    background: rgba(26,111,212,0.04);
+    border: 1px solid rgba(26,111,212,0.1);
+    border-radius: var(--radius2);
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .form-section-title {
+    font-size: 14px; font-weight: 800;
+    color: var(--primary); margin-bottom: 14px;
+    display: flex; align-items: center; gap: 7px;
+  }
+
+  /* ====== INSTALLMENT SCHEDULE ====== */
+  .schedule-table { width: 100%; border-collapse: collapse; }
+  .schedule-table th, .schedule-table td {
+    padding: 10px 12px; font-size: 13px; text-align: right;
+    border-bottom: 1px solid rgba(200,220,255,0.25);
+  }
+  .schedule-table th { font-weight: 700; color: var(--text3); background: rgba(26,111,212,0.05); }
+  .schedule-table tr:hover td { background: rgba(26,111,212,0.03); }
+  .schedule-table .paid-row td { opacity: 0.6; }
+  .schedule-table .late-row td { background: rgba(239,68,68,0.04); }
+  .schedule-table .due-row td { background: rgba(245,158,11,0.04); }
+
+  .pay-btn {
+    height: 28px; padding: 0 12px;
+    background: var(--success); color: #fff;
+    border: none; border-radius: 8px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 12px; font-weight: 700; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .pay-btn:hover { background: #16a34a; }
+  .pay-btn:disabled { background: var(--text4); cursor: not-allowed; }
+
+  /* ====== PAYMENT HISTORY ====== */
+  .payment-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 0; border-bottom: 1px solid rgba(200,220,255,0.2);
+  }
+  .payment-item:last-child { border-bottom: none; }
+  .payment-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .payment-dot.success { background: var(--success); }
+  .payment-dot.danger { background: var(--danger); }
+  .payment-info { flex: 1; }
+  .payment-title { font-size: 13px; font-weight: 600; color: var(--text); }
+  .payment-date { font-size: 12px; color: var(--text4); }
+  .payment-amount { font-size: 15px; font-weight: 800; color: var(--primary); }
+
+  /* ====== CARDS ====== */
+  .card {
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: var(--shadow2);
+  }
+
+  .card-title {
+    font-size: 16px; font-weight: 800;
+    color: var(--text); margin-bottom: 18px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  /* ====== EMPTY STATE ====== */
+  .empty-state {
+    text-align: center; padding: 60px 20px;
+    color: var(--text3);
+  }
+  .empty-state .icon { font-size: 52px; margin-bottom: 14px; }
+  .empty-state h3 { font-size: 18px; font-weight: 700; color: var(--text2); margin-bottom: 8px; }
+  .empty-state p { font-size: 14px; color: var(--text4); }
+
+  /* ====== NOTIFICATION ====== */
+  .toast-container {
+    position: fixed; bottom: 24px; left: 24px;
+    z-index: 9999; display: flex; flex-direction: column; gap: 10px;
+  }
+
+  .toast {
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 13px 18px;
+    display: flex; align-items: center; gap: 10px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    font-size: 14px; font-weight: 600; color: var(--text);
+    animation: slideInToast 0.3s ease;
+    min-width: 240px;
+  }
+
+  @keyframes slideInToast {
+    from { transform: translateX(-30px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  .toast.success { border-right: 4px solid var(--success); }
+  .toast.error { border-right: 4px solid var(--danger); }
+  .toast.info { border-right: 4px solid var(--primary); }
+
+  /* ====== OVERVIEW TAB ====== */
+  .overview-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .due-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .due-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 13px 16px;
+    background: rgba(255,255,255,0.5);
+    border: 1px solid var(--border2);
+    border-radius: 14px;
+    transition: all 0.2s;
+  }
+
+  .due-item:hover { background: rgba(255,255,255,0.8); transform: translateX(-2px); }
+  .due-item.urgent { border-right: 3px solid var(--danger); }
+  .due-item.soon { border-right: 3px solid var(--warning); }
+
+  .due-item-info { flex: 1; min-width: 0; }
+  .due-name { font-size: 14px; font-weight: 700; color: var(--text); }
+  .due-meta { font-size: 12px; color: var(--text4); margin-top: 2px; }
+  .due-amount { font-size: 16px; font-weight: 800; color: var(--primary); white-space: nowrap; }
+
+  .chart-bars {
+    display: flex; align-items: flex-end; gap: 8px;
+    height: 120px; padding: 10px 0;
+  }
+
+  .chart-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+
+  .chart-bar {
+    width: 100%; border-radius: 6px 6px 0 0;
+    background: linear-gradient(180deg, var(--primary-light), var(--primary));
+    transition: height 0.5s ease;
+    min-height: 4px;
+    position: relative;
+  }
+  .chart-bar.collected { background: linear-gradient(180deg, var(--success), var(--accent2)); }
+  .chart-bar-label { font-size: 11px; color: var(--text4); }
+
+  /* ====== RESPONSIVE ====== */
+  @media (max-width: 768px) {
+    .topbar { padding: 0 16px; }
+    .stats-bar { padding: 14px 16px 0; grid-template-columns: repeat(2, 1fr); }
+    .main { padding: 16px 16px 30px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid.cols3 { grid-template-columns: 1fr; }
+    .overview-grid { grid-template-columns: 1fr; }
+    .data-table th, .data-table td { padding: 10px 10px; font-size: 13px; }
+  }
+
+  /* ====== SCROLLBAR ====== */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(26,111,212,0.25); border-radius: 10px; }
+
+  /* Loading */
+  .loading-spinner {
+    width: 20px; height: 20px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: inline-block;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .amount-big { font-size: 15px; font-weight: 800; color: var(--primary); }
+  .text-success { color: var(--success); font-weight: 700; }
+  .text-danger { color: var(--danger); font-weight: 700; }
+  .text-warning { color: var(--warning); font-weight: 700; }
+  .text-muted { color: var(--text4); }
+  .fw-bold { font-weight: 700; }
+  .mt-1 { margin-top: 6px; }
+  .mt-2 { margin-top: 12px; }
+  .mt-3 { margin-top: 20px; }
+  .flex-row { display: flex; align-items: center; gap: 8px; }
+  .actions-cell { display: flex; align-items: center; gap: 6px; }
+
+  /* ====== OFFLINE INDICATOR ====== */
+  .offline-bar {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 40px;
+    background: linear-gradient(90deg, #f97316, #ef4444);
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 14px; font-weight: 700; color: #fff;
+    z-index: 9000;
+    transform: translateY(-100%);
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: 0 4px 20px rgba(239,68,68,0.4);
+  }
+  .offline-bar.show { transform: translateY(0); }
+  .offline-dot { width: 8px; height: 8px; border-radius: 50%; background: #fff; animation: blink 1.2s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .sync-bar {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 40px;
+    background: linear-gradient(90deg, #1a6fd4, #0ea5e9);
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 14px; font-weight: 700; color: #fff;
+    z-index: 9001;
+    transform: translateY(-100%);
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: 0 4px 20px rgba(26,111,212,0.4);
+  }
+  .sync-bar.show { transform: translateY(0); }
+
+  /* ====== INSTALL PROMPT ====== */
+  .install-overlay {
+    position: fixed; inset: 0;
+    background: rgba(15,23,42,0.55);
+    backdrop-filter: blur(12px);
+    z-index: 9999;
+    display: flex; align-items: flex-end; justify-content: center;
+    padding-bottom: 0;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.4s;
+  }
+  .install-overlay.show { opacity: 1; pointer-events: all; }
+
+  .install-sheet {
+    background: linear-gradient(160deg, rgba(255,255,255,0.97), rgba(241,248,255,0.97));
+    backdrop-filter: blur(30px);
+    border-radius: 32px 32px 0 0;
+    border: 1px solid rgba(255,255,255,0.9);
+    box-shadow: 0 -20px 80px rgba(26,111,212,0.2), 0 0 0 1px rgba(255,255,255,0.5);
+    width: 100%; max-width: 520px;
+    padding: 32px 32px 40px;
+    transform: translateY(100%);
+    transition: transform 0.45s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .install-sheet::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(26,111,212,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .install-overlay.show .install-sheet { transform: translateY(0); }
+
+  .install-handle {
+    width: 44px; height: 5px; background: rgba(26,111,212,0.2);
+    border-radius: 10px; margin: 0 auto 28px; cursor: pointer;
+  }
+
+  .install-app-icon {
+    width: 88px; height: 88px; border-radius: 22px;
+    background: linear-gradient(135deg, #1a6fd4, #0ea5e9);
+    margin: 0 auto 18px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 42px;
+    box-shadow: 0 12px 40px rgba(26,111,212,0.4),
+                0 0 0 1px rgba(255,255,255,0.6),
+                inset 0 1px 0 rgba(255,255,255,0.4);
+    position: relative;
+  }
+
+  .install-app-icon::after {
+    content: '';
+    position: absolute; inset: 0; border-radius: 22px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 60%);
+  }
+
+  .install-title {
+    text-align: center;
+    font-size: 24px; font-weight: 900;
+    color: #0f172a; margin-bottom: 6px;
+    letter-spacing: -0.5px;
+  }
+
+  .install-subtitle {
+    text-align: center;
+    font-size: 15px; color: #64748b;
+    margin-bottom: 28px; font-weight: 500;
+  }
+
+  .install-features {
+    display: flex; flex-direction: column; gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .install-feature {
+    display: flex; align-items: center; gap: 14px;
+    padding: 13px 16px;
+    background: rgba(26,111,212,0.05);
+    border: 1px solid rgba(26,111,212,0.1);
+    border-radius: 14px;
+    transition: all 0.2s;
+  }
+
+  .install-feature:hover { background: rgba(26,111,212,0.08); }
+
+  .install-feature-icon {
+    width: 42px; height: 42px; border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+
+  .install-feature-icon.blue { background: rgba(26,111,212,0.12); }
+  .install-feature-icon.green { background: rgba(34,197,94,0.12); }
+  .install-feature-icon.amber { background: rgba(245,158,11,0.12); }
+
+  .install-feature-text h4 { font-size: 14px; font-weight: 700; color: #1e293b; }
+  .install-feature-text p { font-size: 12px; color: #64748b; margin-top: 2px; }
+
+  .install-btn {
+    width: 100%; height: 56px;
+    background: linear-gradient(135deg, #1a6fd4, #0ea5e9);
+    border: none; border-radius: 16px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 18px; font-weight: 800;
+    color: #fff; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    box-shadow: 0 8px 28px rgba(26,111,212,0.4),
+                inset 0 1px 0 rgba(255,255,255,0.25);
+    transition: all 0.2s;
+    margin-bottom: 12px;
+    letter-spacing: 0.3px;
+  }
+
+  .install-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(26,111,212,0.5); }
+  .install-btn:active { transform: translateY(0); }
+
+  .install-dismiss {
+    width: 100%; height: 44px;
+    background: transparent; border: none;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 14px; color: #94a3b8;
+    cursor: pointer; font-weight: 600;
+    transition: color 0.2s;
+  }
+  .install-dismiss:hover { color: #64748b; }
+
+  /* Mini install button in topbar */
+  .install-mini-btn {
+    height: 38px; padding: 0 14px;
+    background: linear-gradient(135deg, rgba(26,111,212,0.12), rgba(14,165,233,0.12));
+    border: 1.5px solid rgba(26,111,212,0.3);
+    border-radius: 10px;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 13px; font-weight: 700;
+    color: var(--primary); cursor: pointer;
+    display: none; align-items: center; gap: 6px;
+    transition: all 0.2s; animation: installPulse 2s infinite;
+  }
+  .install-mini-btn.visible { display: flex; }
+  .install-mini-btn:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+  @keyframes installPulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(26,111,212,0.3); }
+    50% { box-shadow: 0 0 0 6px rgba(26,111,212,0); }
+  }
+
+  /* Pending ops badge */
+  .pending-badge {
+    display: none; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 20px;
+    background: rgba(245,158,11,0.15);
+    border: 1px solid rgba(245,158,11,0.3);
+    font-size: 12px; font-weight: 700; color: #d97706;
+    margin-right: 8px;
+    animation: pendingPulse 2s infinite;
+  }
+  .pending-badge.show { display: flex; }
+  @keyframes pendingPulse {
+    0%,100% { opacity:1 }
+    50% { opacity:0.6 }
+  }
+</style>
+</head>
+<body>
+<!-- OFFLINE BAR -->
+<div class="offline-bar" id="offlineBar">
+  <div class="offline-dot"></div>
+  أنت غير متصل بالإنترنت — يعمل البرنامج بالكامل ويزامن تلقائياً عند عودة الاتصال
+</div>
+
+<!-- SYNC BAR -->
+<div class="sync-bar" id="syncBar">
+  <div class="loading-spinner" style="border-color:rgba(255,255,255,0.3);border-top-color:#fff"></div>
+  جارٍ مزامنة البيانات مع الخادم...
+</div>
+
+<!-- INSTALL PROMPT -->
+<div class="install-overlay" id="installOverlay">
+  <div class="install-sheet" id="installSheet">
+    <div class="install-handle" onclick="dismissInstall()"></div>
+    <div class="install-app-icon">💳</div>
+    <div class="install-title">نظام الأقساط</div>
+    <div class="install-subtitle">ثبّت التطبيق على جهازك للوصول السريع</div>
+
+    <div class="install-features">
+      <div class="install-feature">
+        <div class="install-feature-icon blue">⚡</div>
+        <div class="install-feature-text">
+          <h4>يعمل بدون إنترنت</h4>
+          <p>جميع البيانات محفوظة محلياً وتزامن تلقائي عند الاتصال</p>
+        </div>
+      </div>
+      <div class="install-feature">
+        <div class="install-feature-icon green">📱</div>
+        <div class="install-feature-text">
+          <h4>تجربة تطبيق أصيلة</h4>
+          <p>يفتح بشاشة كاملة بدون شريط المتصفح</p>
+        </div>
+      </div>
+      <div class="install-feature">
+        <div class="install-feature-icon amber">🔔</div>
+        <div class="install-feature-text">
+          <h4>وصول فوري</h4>
+          <p>أيقونة على سطح المكتب أو الهاتف مباشرةً</p>
+        </div>
+      </div>
+    </div>
+
+    <button class="install-btn" id="installConfirmBtn" onclick="triggerInstall()">
+      📲 تثبيت التطبيق الآن
+    </button>
+    <button class="install-dismiss" onclick="dismissInstall()">ليس الآن</button>
+  </div>
+</div>
+
+<div id="app">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-logo">
+      <div class="logo-icon">💳</div>
+      <div>
+        <div class="logo-text">نظام الأقساط</div>
+        <div class="logo-sub">إدارة شاملة للمجمعات السكنية</div>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <span class="pending-badge" id="pendingBadge">⏳ <span id="pendingCount">0</span> عملية معلقة</span>
+      <button class="install-mini-btn" id="installMiniBtn" onclick="showInstallPrompt()">📲 تثبيت</button>
+      <button class="topbar-btn" onclick="exportData()">📊 تصدير</button>
+      <button class="topbar-btn" onclick="printReport()">🖨️ طباعة</button>
+      <button class="topbar-btn primary" onclick="openAddContract()">＋ عقد جديد</button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-bar" id="statsBar">
+    <div class="stat-card">
+      <div class="stat-icon blue">📋</div>
+      <div class="stat-info">
+        <div class="stat-label">إجمالي العقود</div>
+        <div class="stat-value" id="statTotal">0</div>
+        <div class="stat-sub">عقد نشط</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green">✅</div>
+      <div class="stat-info">
+        <div class="stat-label">المحصّل هذا الشهر</div>
+        <div class="stat-value" id="statCollected">0</div>
+        <div class="stat-sub">دينار</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon amber">⏰</div>
+      <div class="stat-info">
+        <div class="stat-label">مستحقة هذا الشهر</div>
+        <div class="stat-value" id="statDue">0</div>
+        <div class="stat-sub">دينار</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon red">⚠️</div>
+      <div class="stat-info">
+        <div class="stat-label">متأخرة</div>
+        <div class="stat-value" id="statLate">0</div>
+        <div class="stat-sub">دفعة متأخرة</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon purple">💰</div>
+      <div class="stat-info">
+        <div class="stat-label">إجمالي القيمة</div>
+        <div class="stat-value" id="statTotalValue">0</div>
+        <div class="stat-sub">دينار</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon sky">🏢</div>
+      <div class="stat-info">
+        <div class="stat-label">وحدات مباعة</div>
+        <div class="stat-value" id="statUnits">0</div>
+        <div class="stat-sub">وحدة</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- TABS -->
+    <div class="tabs-nav">
+      <button class="tab-btn active" onclick="switchTab('overview')">🏠 نظرة عامة</button>
+      <button class="tab-btn" onclick="switchTab('contracts')">📋 العقود</button>
+      <button class="tab-btn" onclick="switchTab('payments')">💳 المدفوعات</button>
+      <button class="tab-btn" onclick="switchTab('customers')">👥 العملاء</button>
+      <button class="tab-btn" onclick="switchTab('units')">🏢 الوحدات</button>
+    </div>
+
+    <!-- OVERVIEW TAB -->
+    <div id="tab-overview" class="tab-panel active">
+      <div class="overview-grid">
+        <div class="card">
+          <div class="card-title">⚡ الدفعات القادمة</div>
+          <div class="due-list" id="upcomingList">
+            <div class="empty-state"><div class="icon">📭</div><p>لا توجد دفعات قريبة</p></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">🔴 متأخرة عن السداد</div>
+          <div class="due-list" id="lateList">
+            <div class="empty-state"><div class="icon">✨</div><p>ممتاز! لا توجد دفعات متأخرة</p></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">📈 التحصيل الشهري</div>
+          <div id="monthlyChart" class="chart-bars"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">📊 إحصائيات العقود</div>
+          <div id="contractStats"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTRACTS TAB -->
+    <div id="tab-contracts" class="tab-panel">
+      <div class="toolbar">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" placeholder="بحث بالاسم أو رقم العقد..." oninput="filterContracts(this.value)" id="contractSearch">
+        </div>
+        <select class="select-filter" onchange="filterContracts()" id="statusFilter">
+          <option value="">كل الحالات</option>
+          <option value="active">نشط</option>
+          <option value="completed">مكتمل</option>
+          <option value="late">متأخر</option>
+          <option value="cancelled">ملغي</option>
+        </select>
+        <select class="select-filter" onchange="filterContracts()" id="unitTypeFilter">
+          <option value="">كل الوحدات</option>
+          <option value="apartment">شقة</option>
+          <option value="villa">فيلا</option>
+          <option value="shop">محل</option>
+          <option value="office">مكتب</option>
+          <option value="land">أرض</option>
+        </select>
+        <button class="btn btn-primary" onclick="openAddContract()">＋ عقد جديد</button>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table" id="contractsTable">
+          <thead>
+            <tr>
+              <th>رقم العقد</th>
+              <th>العميل</th>
+              <th>الوحدة</th>
+              <th>القيمة الكلية</th>
+              <th>الدفعة الأولى</th>
+              <th>القسط الشهري</th>
+              <th>التقدم</th>
+              <th>الحالة</th>
+              <th>إجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="contractsBody">
+            <tr><td colspan="9"><div class="empty-state"><div class="icon">📋</div><h3>لا توجد عقود</h3><p>أضف عقدك الأول للبدء</p></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PAYMENTS TAB -->
+    <div id="tab-payments" class="tab-panel">
+      <div class="toolbar">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" placeholder="بحث في المدفوعات..." oninput="filterPayments(this.value)">
+        </div>
+        <select class="select-filter" onchange="filterPaymentsByStatus(this.value)">
+          <option value="">كل الحالات</option>
+          <option value="paid">مدفوعة</option>
+          <option value="pending">معلقة</option>
+          <option value="late">متأخرة</option>
+        </select>
+        <input type="month" class="select-filter" onchange="filterPaymentsByMonth(this.value)" id="monthFilter">
+        <button class="btn btn-success" onclick="openReceivePayment()">＋ تسجيل دفعة</button>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table" id="paymentsTable">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>العميل</th>
+              <th>العقد</th>
+              <th>رقم القسط</th>
+              <th>المبلغ المستحق</th>
+              <th>المبلغ المدفوع</th>
+              <th>تاريخ الاستحقاق</th>
+              <th>تاريخ الدفع</th>
+              <th>طريقة الدفع</th>
+              <th>الحالة</th>
+              <th>إجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="paymentsBody">
+            <tr><td colspan="11"><div class="empty-state"><div class="icon">💳</div><h3>لا توجد مدفوعات</h3></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CUSTOMERS TAB -->
+    <div id="tab-customers" class="tab-panel">
+      <div class="toolbar">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" placeholder="بحث عن عميل..." oninput="filterCustomers(this.value)">
+        </div>
+        <button class="btn btn-primary" onclick="openAddCustomer()">＋ عميل جديد</button>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table" id="customersTable">
+          <thead>
+            <tr>
+              <th>العميل</th>
+              <th>رقم الهوية</th>
+              <th>الهاتف</th>
+              <th>البريد</th>
+              <th>العقود</th>
+              <th>إجمالي الديون</th>
+              <th>إجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="customersBody">
+            <tr><td colspan="7"><div class="empty-state"><div class="icon">👥</div><h3>لا يوجد عملاء</h3></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- UNITS TAB -->
+    <div id="tab-units" class="tab-panel">
+      <div class="toolbar">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" class="search-input" placeholder="بحث عن وحدة..." oninput="filterUnits(this.value)">
+        </div>
+        <select class="select-filter" onchange="filterUnitsByStatus(this.value)">
+          <option value="">كل الحالات</option>
+          <option value="available">متاحة</option>
+          <option value="sold">مباعة</option>
+          <option value="reserved">محجوزة</option>
+        </select>
+        <button class="btn btn-primary" onclick="openAddUnit()">＋ وحدة جديدة</button>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table" id="unitsTable">
+          <thead>
+            <tr>
+              <th>رقم الوحدة</th>
+              <th>النوع</th>
+              <th>المساحة</th>
+              <th>الطابق</th>
+              <th>السعر</th>
+              <th>الحالة</th>
+              <th>العميل</th>
+              <th>إجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="unitsBody">
+            <tr><td colspan="8"><div class="empty-state"><div class="icon">🏢</div><h3>لا توجد وحدات</h3></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- TOAST -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ============================================================
+     MODALS
+     ============================================================ -->
+
+<!-- ADD CONTRACT MODAL -->
+<div class="modal-overlay" id="contractModal">
+  <div class="modal wide">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="contractModalTitle">📋 عقد قسط جديد</div>
+        <div class="modal-sub">أدخل تفاصيل العقد وجدول الأقساط</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('contractModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-section">
+        <div class="form-section-title">👤 معلومات العميل</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">العميل *</label>
+            <select class="form-control" id="contractCustomer" required>
+              <option value="">-- اختر عميلاً --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">الوحدة *</label>
+            <select class="form-control" id="contractUnit" required>
+              <option value="">-- اختر الوحدة --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">تاريخ العقد *</label>
+            <input type="date" class="form-control" id="contractDate" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">تاريخ التسليم</label>
+            <input type="date" class="form-control" id="contractDelivery">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">💰 التفاصيل المالية</div>
+        <div class="form-grid cols3">
+          <div class="form-group">
+            <label class="form-label">القيمة الإجمالية (د.ع) *</label>
+            <input type="number" class="form-control" id="contractTotal" placeholder="0" oninput="calcInstallments()" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">الدفعة الأولى (د.ع)</label>
+            <input type="number" class="form-control" id="contractDownPayment" placeholder="0" oninput="calcInstallments()">
+          </div>
+          <div class="form-group">
+            <label class="form-label">عدد الأقساط *</label>
+            <input type="number" class="form-control" id="contractInstCount" placeholder="12" min="1" max="360" oninput="calcInstallments()" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">دورية القسط</label>
+            <select class="form-control" id="contractFreq" onchange="calcInstallments()">
+              <option value="monthly">شهري</option>
+              <option value="quarterly">ربع سنوي</option>
+              <option value="biannual">نصف سنوي</option>
+              <option value="annual">سنوي</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">تاريخ أول قسط *</label>
+            <input type="date" class="form-control" id="contractFirstInst" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">نسبة الفائدة % (اختياري)</label>
+            <input type="number" class="form-control" id="contractInterest" placeholder="0" min="0" step="0.1" oninput="calcInstallments()">
+          </div>
+        </div>
+        <div class="form-grid mt-2">
+          <div class="form-group">
+            <label class="form-label">مبلغ القسط</label>
+            <input type="text" class="form-control" id="contractInstAmount" readonly style="background:rgba(26,111,212,0.06);font-weight:700;color:var(--primary)">
+          </div>
+          <div class="form-group">
+            <label class="form-label">إجمالي الأقساط</label>
+            <input type="text" class="form-control" id="contractTotalInst" readonly style="background:rgba(26,111,212,0.06);font-weight:700;color:var(--primary)">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <div class="form-section-title">📝 ملاحظات</div>
+        <div class="form-group">
+          <textarea class="form-control" id="contractNotes" placeholder="أي ملاحظات إضافية..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('contractModal')">إلغاء</button>
+      <button class="btn btn-primary" onclick="saveContract()">💾 حفظ العقد</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW CONTRACT MODAL -->
+<div class="modal-overlay" id="viewContractModal">
+  <div class="modal wide">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="viewContractTitle">تفاصيل العقد</div>
+        <div class="modal-sub" id="viewContractSub"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal('viewContractModal')">✕</button>
+    </div>
+    <div class="modal-body" id="viewContractBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('viewContractModal')">إغلاق</button>
+      <button class="btn btn-primary" onclick="printContract()">🖨️ طباعة</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD CUSTOMER MODAL -->
+<div class="modal-overlay" id="customerModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">👤 إضافة عميل جديد</div>
+      </div>
+      <button class="modal-close" onclick="closeModal('customerModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">الاسم الكامل *</label>
+          <input type="text" class="form-control" id="custName" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">رقم الهوية</label>
+          <input type="text" class="form-control" id="custId">
+        </div>
+        <div class="form-group">
+          <label class="form-label">رقم الهاتف *</label>
+          <input type="tel" class="form-control" id="custPhone" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">هاتف بديل</label>
+          <input type="tel" class="form-control" id="custPhone2">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">البريد الإلكتروني</label>
+          <input type="email" class="form-control" id="custEmail">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">العنوان</label>
+          <input type="text" class="form-control" id="custAddress">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">ملاحظات</label>
+          <textarea class="form-control" id="custNotes"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('customerModal')">إلغاء</button>
+      <button class="btn btn-primary" onclick="saveCustomer()">💾 حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD UNIT MODAL -->
+<div class="modal-overlay" id="unitModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-title">🏢 إضافة وحدة جديدة</div></div>
+      <button class="modal-close" onclick="closeModal('unitModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">رقم الوحدة *</label>
+          <input type="text" class="form-control" id="unitNumber" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">النوع *</label>
+          <select class="form-control" id="unitType">
+            <option value="apartment">شقة</option>
+            <option value="villa">فيلا</option>
+            <option value="shop">محل تجاري</option>
+            <option value="office">مكتب</option>
+            <option value="land">أرض</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">المساحة (م²) *</label>
+          <input type="number" class="form-control" id="unitArea" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">الطابق</label>
+          <input type="text" class="form-control" id="unitFloor" placeholder="مثال: الأول">
+        </div>
+        <div class="form-group">
+          <label class="form-label">عدد الغرف</label>
+          <input type="number" class="form-control" id="unitRooms">
+        </div>
+        <div class="form-group">
+          <label class="form-label">سعر البيع (د.ع) *</label>
+          <input type="number" class="form-control" id="unitPrice" required>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">وصف / ملاحظات</label>
+          <textarea class="form-control" id="unitDesc"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('unitModal')">إلغاء</button>
+      <button class="btn btn-primary" onclick="saveUnit()">💾 حفظ</button>
+    </div>
+  </div>
+</div>
+
+<!-- RECEIVE PAYMENT MODAL -->
+<div class="modal-overlay" id="paymentModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">💳 تسجيل دفعة</div>
+        <div class="modal-sub" id="paymentModalSub"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal('paymentModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label class="form-label">العقد *</label>
+          <select class="form-control" id="payContract" onchange="loadContractInstallments(this.value)" required>
+            <option value="">-- اختر العقد --</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">القسط *</label>
+          <select class="form-control" id="payInstallment" required>
+            <option value="">-- اختر القسط --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">المبلغ المدفوع (د.ع) *</label>
+          <input type="number" class="form-control" id="payAmount" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">تاريخ الدفع *</label>
+          <input type="date" class="form-control" id="payDate" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">طريقة الدفع</label>
+          <select class="form-control" id="payMethod">
+            <option value="cash">نقدي</option>
+            <option value="transfer">تحويل بنكي</option>
+            <option value="check">شيك</option>
+            <option value="pos">POS</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">رقم الوصل / المرجع</label>
+          <input type="text" class="form-control" id="payRef">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">ملاحظات</label>
+          <textarea class="form-control" id="payNotes"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('paymentModal')">إلغاء</button>
+      <button class="btn btn-success" onclick="savePayment()">✅ تأكيد الدفعة</button>
+    </div>
+  </div>
+</div>
+
+<!-- FIREBASE + IDB SCRIPT -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, doc, setDoc, getDoc, getDocs, deleteDoc, onSnapshot, serverTimestamp, query, orderBy }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDq4xo8Wiy9mKIFBvSz20fruQ9O_iYCpj8",
+  authDomain: "neonchat-d1422.firebaseapp.com",
+  projectId: "neonchat-d1422",
+  storageBucket: "neonchat-d1422.firebasestorage.app",
+  messagingSenderId: "877003108074",
+  appId: "1:877003108074:web:8445b882b806c51278b193",
+  measurementId: "G-TTNZQY67WN"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
+
+// ===== IDB SETUP =====
+const IDB_NAME = 'InstallmentsDB';
+const IDB_VERSION = 2;
+let idb;
+
+function openIDB() {
+  return new Promise((res, rej) => {
+    const req = indexedDB.open(IDB_NAME, IDB_VERSION);
+    req.onupgradeneeded = e => {
+      const d = e.target.result;
+      ['customers','units','contracts','installments','payments'].forEach(store => {
+        if (!d.objectStoreNames.contains(store)) {
+          d.createObjectStore(store, { keyPath: 'id' });
+        }
+      });
+    };
+    req.onsuccess = e => res(e.target.result);
+    req.onerror = e => rej(e);
+  });
+}
+
+async function idbGetAll(store) {
+  return new Promise((res, rej) => {
+    const tx = idb.transaction(store, 'readonly');
+    const req = tx.objectStore(store).getAll();
+    req.onsuccess = () => res(req.result);
+    req.onerror = rej;
+  });
+}
+
+async function idbPut(store, item) {
+  return new Promise((res, rej) => {
+    const tx = idb.transaction(store, 'readwrite');
+    tx.objectStore(store).put(item);
+    tx.oncomplete = res;
+    tx.onerror = rej;
+  });
+}
+
+async function idbDelete(store, id) {
+  return new Promise((res, rej) => {
+    const tx = idb.transaction(store, 'readwrite');
+    tx.objectStore(store).delete(id);
+    tx.oncomplete = res;
+    tx.onerror = rej;
+  });
+}
+
+// ===== FIREBASE SYNC =====
+function syncFromFirebase() {
+  ['customers','units','contracts','installments','payments'].forEach(store => {
+    onSnapshot(collection(db, store), async (snapshot) => {
+      const existing = await idbGetAll(store);
+      const fbIds = new Set();
+      for (const docSnap of snapshot.docs) {
+        const data = { ...docSnap.data(), id: docSnap.id };
+        // Clean serverTimestamp fields
+        for (const k of Object.keys(data)) {
+          if (data[k] && typeof data[k] === 'object' && data[k].seconds) {
+            data[k] = new Date(data[k].seconds * 1000).toISOString();
+          }
+        }
+        await idbPut(store, data);
+        fbIds.add(docSnap.id);
+      }
+      // Remove deleted
+      for (const item of existing) {
+        if (!fbIds.has(item.id)) await idbDelete(store, item.id);
+      }
+      window._refreshAll();
+    });
+  });
+}
+
+async function saveToFirebase(store, data) {
+  const clean = {};
+  for (const k of Object.keys(data)) {
+    if (data[k] !== undefined) clean[k] = data[k];
+  }
+  await setDoc(doc(db, store, clean.id), clean);
+}
+
+async function deleteFromFirebase(store, id) {
+  await deleteDoc(doc(db, store, id));
+}
+
+// ===== INIT =====
+idb = await openIDB();
+syncFromFirebase();
+
+// ===== GLOBAL STATE (from IDB) =====
+let customers = [], units = [], contracts = [], installments = [], payments = [];
+
+async function loadAll() {
+  customers    = await idbGetAll('customers');
+  units        = await idbGetAll('units');
+  contracts    = await idbGetAll('contracts');
+  installments = await idbGetAll('installments');
+  payments     = await idbGetAll('payments');
+}
+
+window._refreshAll = async function() {
+  await loadAll();
+  renderStats();
+  renderContracts();
+  renderPayments();
+  renderCustomers();
+  renderUnits();
+  renderOverview();
+};
+
+// expose helpers
+window._idbPut = idbPut;
+window._idbDelete = idbDelete;
+window._saveToFB = saveToFirebase;
+window._deleteFB = deleteFromFirebase;
+window._getData = () => ({ customers, units, contracts, installments, payments });
+window._loadAll = loadAll;
+
+await window._refreshAll();
+</script>
+
+<script>
+// ====================================================
+// HELPERS
+// ====================================================
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+function fmt(n) {
+  return Number(n || 0).toLocaleString('ar-IQ');
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  const dt = new Date(d);
+  return dt.toLocaleDateString('ar-IQ', { year: 'numeric', month: '2-digit', day: '2-digit' });
+}
+
+function today() {
+  return new Date().toISOString().split('T')[0];
+}
+
+function isLate(dateStr) {
+  return dateStr && new Date(dateStr) < new Date(today());
+}
+
+function isDueSoon(dateStr, days = 7) {
+  if (!dateStr) return false;
+  const d = new Date(dateStr);
+  const t = new Date();
+  const diff = (d - t) / (1000 * 60 * 60 * 24);
+  return diff >= 0 && diff <= days;
+}
+
+function getInitials(name) {
+  if (!name) return '?';
+  const parts = name.trim().split(' ');
+  return parts.length >= 2 ? parts[0][0] + parts[1][0] : parts[0].slice(0, 2);
+}
+
+function statusBadge(status) {
+  const map = {
+    active:    ['badge-info', 'نشط'],
+    completed: ['badge-success', 'مكتمل'],
+    late:      ['badge-danger', 'متأخر'],
+    cancelled: ['badge-gray', 'ملغي'],
+    paid:      ['badge-success', '✅ مدفوع'],
+    pending:   ['badge-warning', '⏳ معلق'],
+    available: ['badge-success', 'متاح'],
+    sold:      ['badge-purple', 'مباع'],
+    reserved:  ['badge-warning', 'محجوز'],
+  };
+  const [cls, label] = map[status] || ['badge-gray', status];
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+
+function unitTypeName(t) {
+  return { apartment:'شقة', villa:'فيلا', shop:'محل', office:'مكتب', land:'أرض' }[t] || t;
+}
+
+function payMethodName(m) {
+  return { cash:'نقدي 💵', transfer:'تحويل 🏦', check:'شيك 📄', pos:'POS 💳' }[m] || m;
+}
+
+function addMonths(dateStr, n) {
+  const d = new Date(dateStr);
+  d.setMonth(d.getMonth() + n);
+  return d.toISOString().split('T')[0];
+}
+
+function addDays(dateStr, n) {
+  const d = new Date(dateStr);
+  d.setDate(d.getDate() + n);
+  return d.toISOString().split('T')[0];
+}
+
+function freqMonths(freq) {
+  return { monthly:1, quarterly:3, biannual:6, annual:12 }[freq] || 1;
+}
+
+// ====================================================
+// TABS
+// ====================================================
+window.switchTab = function(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  event.currentTarget.classList.add('active');
+};
+
+// ====================================================
+// STATS
+// ====================================================
+function renderStats() {
+  const { contracts, installments, payments, units } = window._getData();
+  const activeContracts = contracts.filter(c => c.status === 'active' || !c.status).length;
+
+  const now = new Date();
+  const thisMonth = now.getMonth();
+  const thisYear = now.getFullYear();
+
+  let collectedThisMonth = 0;
+  payments.filter(p => {
+    if (!p.paidDate) return false;
+    const d = new Date(p.paidDate);
+    return d.getMonth() === thisMonth && d.getFullYear() === thisYear;
+  }).forEach(p => collectedThisMonth += Number(p.amountPaid || 0));
+
+  let dueThisMonth = 0;
+  installments.filter(i => {
+    if (!i.dueDate) return false;
+    const d = new Date(i.dueDate);
+    return d.getMonth() === thisMonth && d.getFullYear() === thisYear && i.status !== 'paid';
+  }).forEach(i => dueThisMonth += Number(i.amount || 0));
+
+  const lateCount = installments.filter(i => i.status !== 'paid' && isLate(i.dueDate)).length;
+  const totalValue = contracts.reduce((a, c) => a + Number(c.totalAmount || 0), 0);
+  const soldUnits = units.filter(u => u.status === 'sold').length;
+
+  document.getElementById('statTotal').textContent = activeContracts;
+  document.getElementById('statCollected').textContent = fmt(collectedThisMonth);
+  document.getElementById('statDue').textContent = fmt(dueThisMonth);
+  document.getElementById('statLate').textContent = lateCount;
+  document.getElementById('statTotalValue').textContent = fmt(totalValue);
+  document.getElementById('statUnits').textContent = soldUnits;
+}
+
+// ====================================================
+// OVERVIEW
+// ====================================================
+function renderOverview() {
+  const { installments, payments, contracts, customers } = window._getData();
+
+  // Upcoming
+  const upcoming = installments
+    .filter(i => i.status !== 'paid' && isDueSoon(i.dueDate, 14))
+    .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+    .slice(0, 5);
+
+  const upcomingEl = document.getElementById('upcomingList');
+  if (upcoming.length === 0) {
+    upcomingEl.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>لا توجد دفعات قريبة</p></div>';
+  } else {
+    upcomingEl.innerHTML = upcoming.map(i => {
+      const contract = contracts.find(c => c.id === i.contractId) || {};
+      const customer = customers.find(c => c.id === contract.customerId) || {};
+      const urgency = isDueSoon(i.dueDate, 3) ? 'urgent' : 'soon';
+      return `<div class="due-item ${urgency}">
+        <div class="avatar">${getInitials(customer.name || '?')}</div>
+        <div class="due-item-info">
+          <div class="due-name">${customer.name || '—'}</div>
+          <div class="due-meta">القسط ${i.installmentNum} • ${fmtDate(i.dueDate)}</div>
+        </div>
+        <div class="due-amount">${fmt(i.amount)} د.ع</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Late
+  const late = installments
+    .filter(i => i.status !== 'paid' && isLate(i.dueDate))
+    .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+    .slice(0, 5);
+
+  const lateEl = document.getElementById('lateList');
+  if (late.length === 0) {
+    lateEl.innerHTML = '<div class="empty-state"><div class="icon">✨</div><p>ممتاز! لا توجد دفعات متأخرة</p></div>';
+  } else {
+    lateEl.innerHTML = late.map(i => {
+      const contract = contracts.find(c => c.id === i.contractId) || {};
+      const customer = customers.find(c => c.id === contract.customerId) || {};
+      const daysLate = Math.floor((new Date() - new Date(i.dueDate)) / (1000 * 60 * 60 * 24));
+      return `<div class="due-item urgent">
+        <div class="avatar" style="background:linear-gradient(135deg,#ef4444,#f97316)">${getInitials(customer.name || '?')}</div>
+        <div class="due-item-info">
+          <div class="due-name">${customer.name || '—'}</div>
+          <div class="due-meta text-danger">متأخر ${daysLate} يوم • ${fmtDate(i.dueDate)}</div>
+        </div>
+        <div class="due-amount text-danger">${fmt(i.amount)} د.ع</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Monthly chart (last 6 months)
+  const chartEl = document.getElementById('monthlyChart');
+  const months = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date();
+    d.setMonth(d.getMonth() - i);
+    months.push({ label: d.toLocaleDateString('ar-IQ', { month: 'short' }), month: d.getMonth(), year: d.getFullYear() });
+  }
+
+  const monthlyData = months.map(m => {
+    let collected = 0;
+    payments.forEach(p => {
+      if (!p.paidDate) return;
+      const d = new Date(p.paidDate);
+      if (d.getMonth() === m.month && d.getFullYear() === m.year) {
+        collected += Number(p.amountPaid || 0);
+      }
+    });
+    return { ...m, collected };
+  });
+
+  const maxVal = Math.max(...monthlyData.map(m => m.collected), 1);
+  chartEl.innerHTML = monthlyData.map(m => {
+    const height = Math.max((m.collected / maxVal) * 100, 4);
+    return `<div class="chart-bar-wrap">
+      <div class="chart-bar collected" style="height:${height}px" title="${fmt(m.collected)} د.ع"></div>
+      <div class="chart-bar-label">${m.label}</div>
+    </div>`;
+  }).join('');
+
+  // Contract stats
+  const statsEl = document.getElementById('contractStats');
+  const { contracts: allContracts } = window._getData();
+  const active = allContracts.filter(c => c.status === 'active' || !c.status).length;
+  const completed = allContracts.filter(c => c.status === 'completed').length;
+  const lateCt = allContracts.filter(c => c.status === 'late').length;
+  const totalCollected = payments.reduce((a, p) => a + Number(p.amountPaid || 0), 0);
+  const totalOwed = allContracts.reduce((a, c) => a + Number(c.totalAmount || 0), 0) -
+                    allContracts.reduce((a, c) => a + Number(c.downPayment || 0), 0);
+
+  statsEl.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:13px;color:var(--text3)">عقود نشطة</span>
+        <span style="font-weight:800;color:var(--primary)">${active}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:13px;color:var(--text3)">عقود مكتملة</span>
+        <span style="font-weight:800;color:var(--success)">${completed}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:13px;color:var(--text3)">إجمالي المحصّل</span>
+        <span style="font-weight:800;color:var(--success)">${fmt(totalCollected)} د.ع</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:13px;color:var(--text3)">المتبقي للتحصيل</span>
+        <span style="font-weight:800;color:var(--warning)">${fmt(Math.max(totalOwed - totalCollected, 0))} د.ع</span>
+      </div>
+      <div style="margin-top:6px">
+        <div style="height:8px;background:rgba(200,220,255,0.4);border-radius:10px;overflow:hidden">
+          <div style="height:100%;width:${totalOwed ? Math.min((totalCollected/totalOwed)*100,100) : 0}%;background:linear-gradient(90deg,var(--primary),var(--sky));border-radius:10px;transition:width 0.5s"></div>
+        </div>
+        <div style="font-size:12px;color:var(--text4);margin-top:4px;text-align:center">
+          ${totalOwed ? ((totalCollected/totalOwed)*100).toFixed(1) : 0}% من إجمالي الأقساط محصّل
+        </div>
+      </div>
+    </div>`;
+}
+
+// ====================================================
+// CONTRACTS
+// ====================================================
+function renderContracts(filter = '', statusF = '', typeF = '') {
+  const { contracts, customers, units, installments, payments } = window._getData();
+  const tbody = document.getElementById('contractsBody');
+  filter = filter || document.getElementById('contractSearch')?.value || '';
+  statusF = statusF || document.getElementById('statusFilter')?.value || '';
+  typeF = typeF || document.getElementById('unitTypeFilter')?.value || '';
+
+  let list = contracts;
+  if (filter) list = list.filter(c => {
+    const cust = customers.find(x => x.id === c.customerId) || {};
+    return (cust.name || '').includes(filter) || c.id.includes(filter) || (c.contractNum || '').includes(filter);
+  });
+  if (statusF) list = list.filter(c => c.status === statusF);
+  if (typeF) {
+    list = list.filter(c => {
+      const unit = units.find(u => u.id === c.unitId);
+      return unit && unit.type === typeF;
+    });
+  }
+
+  if (list.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><div class="icon">📋</div><h3>لا توجد عقود</h3></div></td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = list.sort((a,b)=>b.createdAt?.localeCompare?.(a.createdAt||'')|| 0).map(c => {
+    const customer = customers.find(x => x.id === c.customerId) || {};
+    const unit = units.find(u => u.id === c.unitId) || {};
+    const instList = installments.filter(i => i.contractId === c.id);
+    const paidCount = instList.filter(i => i.status === 'paid').length;
+    const total = instList.length;
+    const pct = total ? (paidCount / total * 100).toFixed(0) : 0;
+    const paidAmt = payments.filter(p => instList.find(i => i.id === p.installmentId)).reduce((a, p) => a + Number(p.amountPaid || 0), 0);
+
+    // Auto-update status
+    const hasLate = instList.some(i => i.status !== 'paid' && isLate(i.dueDate));
+    const allPaid = total > 0 && paidCount === total;
+    const displayStatus = c.status === 'cancelled' ? 'cancelled' : allPaid ? 'completed' : hasLate ? 'late' : 'active';
+
+    return `<tr>
+      <td><span class="fw-bold text-muted" style="font-size:12px">${c.contractNum || c.id.slice(-6).toUpperCase()}</span></td>
+      <td>
+        <div class="customer-cell">
+          <div class="avatar">${getInitials(customer.name)}</div>
+          <div>
+            <div class="customer-name">${customer.name || '—'}</div>
+            <div class="customer-phone">${customer.phone || ''}</div>
+          </div>
+        </div>
+      </td>
+      <td>${unit.number ? `${unit.number} • ${unitTypeName(unit.type)}` : '—'}</td>
+      <td class="amount-big">${fmt(c.totalAmount)}</td>
+      <td>${fmt(c.downPayment)}</td>
+      <td>${fmt(c.installmentAmount)}</td>
+      <td>
+        <div class="progress-wrap">
+          <div class="progress-bar">
+            <div class="progress-fill ${pct == 100 ? 'success' : pct < 30 ? 'danger' : ''}" style="width:${pct}%"></div>
+          </div>
+          <span class="progress-text">${pct}%</span>
+        </div>
+        <div style="font-size:11px;color:var(--text4)">${paidCount}/${total} قسط</div>
+      </td>
+      <td>${statusBadge(displayStatus)}</td>
+      <td>
+        <div class="actions-cell">
+          <button class="btn btn-ghost btn-sm" onclick="viewContract('${c.id}')">👁️</button>
+          <button class="btn btn-success btn-sm" onclick="openPayForContract('${c.id}')">💳</button>
+          <button class="btn btn-ghost btn-sm" onclick="editContract('${c.id}')">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteContract('${c.id}')">🗑️</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+window.filterContracts = function(val) { renderContracts(); };
+
+// ====================================================
+// PAYMENTS TABLE
+// ====================================================
+function renderPayments(filter = '') {
+  const { installments, payments, contracts, customers } = window._getData();
+  const tbody = document.getElementById('paymentsBody');
+
+  const allInst = installments.map(i => {
+    const c = contracts.find(x => x.id === i.contractId) || {};
+    const cust = customers.find(x => x.id === c.customerId) || {};
+    const pmt = payments.find(p => p.installmentId === i.id);
+    return { ...i, contractNum: c.contractNum || c.id?.slice(-6).toUpperCase(), customerName: cust.name, pmt };
+  });
+
+  let list = allInst;
+  if (filter) list = list.filter(i => (i.customerName || '').includes(filter) || (i.contractNum || '').includes(filter));
+
+  if (list.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="11"><div class="empty-state"><div class="icon">💳</div><h3>لا توجد سجلات</h3></div></td></tr>';
+    return;
+  }
+
+  list = list.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+
+  tbody.innerHTML = list.map((i, idx) => {
+    const st = i.status === 'paid' ? 'paid' : isLate(i.dueDate) ? 'late' : 'pending';
+    const rowCls = st === 'late' ? 'late-row' : st === 'paid' ? 'paid-row' : '';
+    return `<tr class="${rowCls}">
+      <td class="text-muted">${idx + 1}</td>
+      <td>${i.customerName || '—'}</td>
+      <td style="font-size:12px;color:var(--text3)">${i.contractNum || '—'}</td>
+      <td>${i.installmentNum}</td>
+      <td class="amount-big">${fmt(i.amount)}</td>
+      <td>${i.pmt ? `<span class="text-success">${fmt(i.pmt.amountPaid)}</span>` : '—'}</td>
+      <td>${fmtDate(i.dueDate)}</td>
+      <td>${i.pmt ? fmtDate(i.pmt.paidDate) : '—'}</td>
+      <td>${i.pmt ? payMethodName(i.pmt.method) : '—'}</td>
+      <td>${statusBadge(st)}</td>
+      <td>
+        ${st !== 'paid' ? `<button class="pay-btn" onclick="openPayInstallment('${i.id}')">تسجيل دفع</button>` : `<button class="btn btn-ghost btn-sm" onclick="viewPayment('${i.pmt?.id}')">🧾</button>`}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+window.filterPayments = (v) => renderPayments(v);
+window.filterPaymentsByStatus = function(v) {
+  const { installments, payments, contracts, customers } = window._getData();
+  const tbody = document.getElementById('paymentsBody');
+  let list = installments.map(i => {
+    const c = contracts.find(x => x.id === i.contractId) || {};
+    const cust = customers.find(x => x.id === c.customerId) || {};
+    const pmt = payments.find(p => p.installmentId === i.id);
+    const st = i.status === 'paid' ? 'paid' : isLate(i.dueDate) ? 'late' : 'pending';
+    return { ...i, st, contractNum: c.contractNum || c.id?.slice(-6), customerName: cust.name, pmt };
+  });
+  if (v) list = list.filter(i => i.st === v);
+  renderPaymentsFiltered(list);
+};
+
+function renderPaymentsFiltered(list) {
+  const tbody = document.getElementById('paymentsBody');
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="11"><div class="empty-state"><div class="icon">💳</div><h3>لا توجد سجلات</h3></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map((i, idx) => {
+    const st = i.st || (i.status === 'paid' ? 'paid' : isLate(i.dueDate) ? 'late' : 'pending');
+    return `<tr>
+      <td class="text-muted">${idx+1}</td>
+      <td>${i.customerName || '—'}</td>
+      <td style="font-size:12px">${i.contractNum || '—'}</td>
+      <td>${i.installmentNum}</td>
+      <td class="amount-big">${fmt(i.amount)}</td>
+      <td>${i.pmt ? `<span class="text-success">${fmt(i.pmt.amountPaid)}</span>` : '—'}</td>
+      <td>${fmtDate(i.dueDate)}</td>
+      <td>${i.pmt ? fmtDate(i.pmt.paidDate) : '—'}</td>
+      <td>${i.pmt ? payMethodName(i.pmt.method) : '—'}</td>
+      <td>${statusBadge(st)}</td>
+      <td>${st !== 'paid' ? `<button class="pay-btn" onclick="openPayInstallment('${i.id}')">تسجيل دفع</button>` : ''}</td>
+    </tr>`;
+  }).join('');
+}
+
+window.filterPaymentsByMonth = function(v) {
+  if (!v) return renderPayments();
+  const [year, month] = v.split('-').map(Number);
+  const { installments, payments, contracts, customers } = window._getData();
+  const list = installments.filter(i => {
+    const d = new Date(i.dueDate);
+    return d.getFullYear() === year && d.getMonth() + 1 === month;
+  }).map(i => {
+    const c = contracts.find(x => x.id === i.contractId) || {};
+    const cust = customers.find(x => x.id === c.customerId) || {};
+    const pmt = payments.find(p => p.installmentId === i.id);
+    const st = i.status === 'paid' ? 'paid' : isLate(i.dueDate) ? 'late' : 'pending';
+    return { ...i, st, contractNum: c.contractNum || c.id?.slice(-6), customerName: cust.name, pmt };
+  });
+  renderPaymentsFiltered(list);
+};
+
+// ====================================================
+// CUSTOMERS
+// ====================================================
+function renderCustomers(filter = '') {
+  const { customers, contracts, installments } = window._getData();
+  const tbody = document.getElementById('customersBody');
+  let list = customers;
+  if (filter) list = list.filter(c => c.name?.includes(filter) || c.phone?.includes(filter));
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="icon">👥</div><h3>لا يوجد عملاء</h3></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(c => {
+    const custContracts = contracts.filter(x => x.customerId === c.id);
+    const totalDebt = custContracts.reduce((a, x) => {
+      const instList = installments.filter(i => i.contractId === x.id && i.status !== 'paid');
+      return a + instList.reduce((s, i) => s + Number(i.amount || 0), 0);
+    }, 0);
+    return `<tr>
+      <td><div class="customer-cell">
+        <div class="avatar">${getInitials(c.name)}</div>
+        <div><div class="customer-name">${c.name}</div></div>
+      </div></td>
+      <td>${c.idNumber || '—'}</td>
+      <td style="direction:ltr">${c.phone || '—'}</td>
+      <td>${c.email || '—'}</td>
+      <td><span class="badge badge-info">${custContracts.length} عقد</span></td>
+      <td class="amount-big ${totalDebt > 0 ? 'text-warning' : 'text-success'}">${fmt(totalDebt)}</td>
+      <td>
+        <div class="actions-cell">
+          <button class="btn btn-ghost btn-sm" onclick="editCustomer('${c.id}')">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteCustomer('${c.id}')">🗑️</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+window.filterCustomers = (v) => renderCustomers(v);
+
+// ====================================================
+// UNITS
+// ====================================================
+function renderUnits(filter = '', statusF = '') {
+  const { units, contracts, customers } = window._getData();
+  const tbody = document.getElementById('unitsBody');
+  let list = units;
+  if (filter) list = list.filter(u => u.number?.includes(filter));
+  if (statusF) list = list.filter(u => u.status === statusF);
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><div class="icon">🏢</div><h3>لا توجد وحدات</h3></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.map(u => {
+    const contract = contracts.find(c => c.unitId === u.id);
+    const customer = contract ? customers.find(c => c.id === contract.customerId) : null;
+    return `<tr>
+      <td class="fw-bold">${u.number}</td>
+      <td>${unitTypeName(u.type)}</td>
+      <td>${u.area} م²</td>
+      <td>${u.floor || '—'}</td>
+      <td class="amount-big">${fmt(u.price)}</td>
+      <td>${statusBadge(u.status || 'available')}</td>
+      <td>${customer ? `<div class="customer-cell"><div class="avatar" style="width:28px;height:28px;font-size:12px">${getInitials(customer.name)}</div><span>${customer.name}</span></div>` : '—'}</td>
+      <td>
+        <div class="actions-cell">
+          <button class="btn btn-ghost btn-sm" onclick="editUnit('${u.id}')">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteUnit('${u.id}')">🗑️</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+window.filterUnits = (v) => renderUnits(v);
+window.filterUnitsByStatus = (v) => renderUnits('', v);
+
+// ====================================================
+// MODALS
+// ====================================================
+window.openModal = function(id) {
+  document.getElementById(id).classList.add('open');
+};
+
+window.closeModal = function(id) {
+  document.getElementById(id).classList.remove('open');
+};
+
+// Close on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+});
+
+// ====================================================
+// ADD CONTRACT
+// ====================================================
+let editingContractId = null;
+
+window.openAddContract = function() {
+  editingContractId = null;
+  document.getElementById('contractModalTitle').textContent = '📋 عقد قسط جديد';
+  // Reset
+  ['contractCustomer','contractUnit','contractDate','contractDelivery','contractTotal',
+   'contractDownPayment','contractInstCount','contractFirstInst','contractInterest',
+   'contractInstAmount','contractTotalInst','contractNotes'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('contractFreq').value = 'monthly';
+  document.getElementById('contractDate').value = today();
+  document.getElementById('contractFirstInst').value = addMonths(today(), 1);
+
+  // Populate customers
+  const { customers, units } = window._getData();
+  const custSel = document.getElementById('contractCustomer');
+  custSel.innerHTML = '<option value="">-- اختر عميلاً --</option>' +
+    customers.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+  const unitSel = document.getElementById('contractUnit');
+  unitSel.innerHTML = '<option value="">-- اختر الوحدة --</option>' +
+    units.filter(u => u.status !== 'sold').map(u => `<option value="${u.id}">${u.number} - ${unitTypeName(u.type)} (${fmt(u.price)} د.ع)</option>`).join('');
+
+  openModal('contractModal');
+};
+
+window.calcInstallments = function() {
+  const total = Number(document.getElementById('contractTotal').value || 0);
+  const down = Number(document.getElementById('contractDownPayment').value || 0);
+  const count = Number(document.getElementById('contractInstCount').value || 0);
+  const interest = Number(document.getElementById('contractInterest').value || 0);
+  if (!total || !count) { document.getElementById('contractInstAmount').value = ''; return; }
+  const remaining = total - down;
+  const withInterest = remaining * (1 + interest / 100);
+  const perInst = withInterest / count;
+  document.getElementById('contractInstAmount').value = fmt(Math.round(perInst)) + ' د.ع';
+  document.getElementById('contractTotalInst').value = fmt(Math.round(withInterest)) + ' د.ع';
+};
+
+window.saveContract = async function() {
+  const customerId = document.getElementById('contractCustomer').value;
+  const unitId = document.getElementById('contractUnit').value;
+  const contractDate = document.getElementById('contractDate').value;
+  const totalAmount = Number(document.getElementById('contractTotal').value);
+  const downPayment = Number(document.getElementById('contractDownPayment').value || 0);
+  const installmentCount = Number(document.getElementById('contractInstCount').value);
+  const firstInstDate = document.getElementById('contractFirstInst').value;
+  const freq = document.getElementById('contractFreq').value;
+  const interest = Number(document.getElementById('contractInterest').value || 0);
+  const notes = document.getElementById('contractNotes').value;
+
+  if (!customerId || !unitId || !contractDate || !totalAmount || !installmentCount || !firstInstDate) {
+    toast('يرجى ملء جميع الحقول المطلوبة', 'error'); return;
+  }
+
+  const remaining = totalAmount - downPayment;
+  const withInterest = remaining * (1 + interest / 100);
+  const instAmount = Math.round(withInterest / installmentCount);
+
+  const id = editingContractId || uid();
+  const { contracts } = window._getData();
+  const contractNum = 'C-' + String(contracts.length + 1).padStart(4, '0');
+
+  const contract = {
+    id, contractNum, customerId, unitId, contractDate,
+    deliveryDate: document.getElementById('contractDelivery').value,
+    totalAmount, downPayment, installmentCount, installmentAmount: instAmount,
+    frequency: freq, firstInstDate, interestRate: interest,
+    notes, status: 'active',
+    createdAt: new Date().toISOString()
+  };
+
+  // Generate installments
+  const instDocs = [];
+  const months = freqMonths(freq);
+  for (let i = 0; i < installmentCount; i++) {
+    const dueDate = addMonths(firstInstDate, i * months);
+    instDocs.push({
+      id: uid(),
+      contractId: id,
+      installmentNum: i + 1,
+      amount: instAmount,
+      dueDate,
+      status: 'pending',
+      createdAt: new Date().toISOString()
+    });
+  }
+
+  try {
+    await window._saveToFB('contracts', contract);
+    for (const inst of instDocs) {
+      await window._saveToFB('installments', inst);
+    }
+    // Update unit status
+    await window._saveToFB('units', { id: unitId, status: 'sold' });
+
+    closeModal('contractModal');
+    toast('تم حفظ العقد بنجاح ✅', 'success');
+  } catch (e) {
+    console.error(e);
+    toast('حدث خطأ: ' + e.message, 'error');
+  }
+};
+
+window.editContract = function(id) {
+  const { contracts, customers, units } = window._getData();
+  const c = contracts.find(x => x.id === id);
+  if (!c) return;
+  editingContractId = id;
+  document.getElementById('contractModalTitle').textContent = '✏️ تعديل العقد';
+
+  const custSel = document.getElementById('contractCustomer');
+  custSel.innerHTML = '<option value="">-- اختر عميلاً --</option>' +
+    customers.map(cu => `<option value="${cu.id}" ${cu.id===c.customerId?'selected':''}>${cu.name}</option>`).join('');
+
+  const unitSel = document.getElementById('contractUnit');
+  unitSel.innerHTML = '<option value="">-- اختر الوحدة --</option>' +
+    units.map(u => `<option value="${u.id}" ${u.id===c.unitId?'selected':''}>${u.number} - ${unitTypeName(u.type)}</option>`).join('');
+
+  document.getElementById('contractDate').value = c.contractDate;
+  document.getElementById('contractDelivery').value = c.deliveryDate || '';
+  document.getElementById('contractTotal').value = c.totalAmount;
+  document.getElementById('contractDownPayment').value = c.downPayment;
+  document.getElementById('contractInstCount').value = c.installmentCount;
+  document.getElementById('contractFreq').value = c.frequency || 'monthly';
+  document.getElementById('contractFirstInst').value = c.firstInstDate;
+  document.getElementById('contractInterest').value = c.interestRate || 0;
+  document.getElementById('contractNotes').value = c.notes || '';
+  calcInstallments();
+  openModal('contractModal');
+};
+
+window.deleteContract = async function(id) {
+  if (!confirm('هل أنت متأكد من حذف هذا العقد؟ سيتم حذف جميع الأقساط المرتبطة به.')) return;
+  const { installments, payments } = window._getData();
+  const instList = installments.filter(i => i.contractId === id);
+  for (const inst of instList) {
+    const pmt = payments.find(p => p.installmentId === inst.id);
+    if (pmt) await window._deleteFB('payments', pmt.id);
+    await window._deleteFB('installments', inst.id);
+  }
+  await window._deleteFB('contracts', id);
+  toast('تم حذف العقد', 'info');
+};
+
+// ====================================================
+// VIEW CONTRACT
+// ====================================================
+window.viewContract = function(id) {
+  const { contracts, customers, units, installments, payments } = window._getData();
+  const c = contracts.find(x => x.id === id);
+  if (!c) return;
+  const customer = customers.find(x => x.id === c.customerId) || {};
+  const unit = units.find(x => x.id === c.unitId) || {};
+  const instList = installments.filter(i => i.contractId === id).sort((a,b) => a.installmentNum - b.installmentNum);
+  const paidCount = instList.filter(i => i.status === 'paid').length;
+  const totalPaid = payments.filter(p => instList.find(i => i.id === p.installmentId)).reduce((a,p)=>a+Number(p.amountPaid||0),0);
+
+  document.getElementById('viewContractTitle').textContent = `عقد ${c.contractNum || c.id.slice(-6)}`;
+  document.getElementById('viewContractSub').textContent = `${customer.name} • ${unit.number || ''} ${unitTypeName(unit.type)}`;
+
+  const body = document.getElementById('viewContractBody');
+  body.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px">
+      <div class="stat-card">
+        <div class="stat-icon blue">💰</div>
+        <div class="stat-info"><div class="stat-label">القيمة الكلية</div><div class="stat-value" style="font-size:18px">${fmt(c.totalAmount)}</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green">✅</div>
+        <div class="stat-info"><div class="stat-label">المحصّل</div><div class="stat-value" style="font-size:18px;color:var(--success)">${fmt(totalPaid)}</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon amber">⏳</div>
+        <div class="stat-info"><div class="stat-label">المتبقي</div><div class="stat-value" style="font-size:18px;color:var(--warning)">${fmt(c.totalAmount - totalPaid)}</div></div>
+      </div>
+    </div>
+    <div class="table-wrap" style="margin-bottom:16px">
+      <table class="schedule-table">
+        <thead>
+          <tr><th>#</th><th>تاريخ الاستحقاق</th><th>المبلغ</th><th>تاريخ الدفع</th><th>الحالة</th><th>إجراء</th></tr>
+        </thead>
+        <tbody>
+          ${instList.map(i => {
+            const pmt = payments.find(p => p.installmentId === i.id);
+            const st = i.status === 'paid' ? 'paid' : isLate(i.dueDate) ? 'late' : 'pending';
+            const rowCls = st === 'paid' ? 'paid-row' : st === 'late' ? 'late-row' : '';
+            return `<tr class="${rowCls}">
+              <td>${i.installmentNum}</td>
+              <td>${fmtDate(i.dueDate)}</td>
+              <td class="amount-big">${fmt(i.amount)}</td>
+              <td>${pmt ? fmtDate(pmt.paidDate) : '—'}</td>
+              <td>${statusBadge(st)}</td>
+              <td>${st !== 'paid' ? `<button class="pay-btn" onclick="openPayInstallment('${i.id}')">دفع</button>` : `<span style='font-size:12px;color:var(--success)'>✅ ${payMethodName(pmt?.method)}</span>`}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`;
+
+  openModal('viewContractModal');
+};
+
+window.printContract = function() {
+  window.print();
+};
+
+let currentContractId = null;
+
+// ====================================================
+// PAYMENTS
+// ====================================================
+window.openReceivePayment = function() {
+  currentContractId = null;
+  document.getElementById('paymentModalSub').textContent = '';
+  const { contracts, customers } = window._getData();
+  const sel = document.getElementById('payContract');
+  sel.innerHTML = '<option value="">-- اختر العقد --</option>' +
+    contracts.map(c => {
+      const cust = customers.find(x => x.id === c.customerId) || {};
+      return `<option value="${c.id}">${c.contractNum || c.id.slice(-6)} - ${cust.name}</option>`;
+    }).join('');
+  document.getElementById('payDate').value = today();
+  document.getElementById('payInstallment').innerHTML = '<option value="">-- اختر القسط --</option>';
+  openModal('paymentModal');
+};
+
+window.openPayForContract = function(contractId) {
+  currentContractId = contractId;
+  openReceivePayment();
+  setTimeout(() => {
+    document.getElementById('payContract').value = contractId;
+    loadContractInstallments(contractId);
+  }, 100);
+};
+
+window.openPayInstallment = function(instId) {
+  const { installments, contracts, customers } = window._getData();
+  const inst = installments.find(i => i.id === instId);
+  if (!inst) return;
+  openPayForContract(inst.contractId);
+  setTimeout(() => {
+    document.getElementById('payInstallment').value = instId;
+    document.getElementById('payAmount').value = inst.amount;
+  }, 200);
+};
+
+window.loadContractInstallments = function(contractId) {
+  const { installments } = window._getData();
+  const pending = installments
+    .filter(i => i.contractId === contractId && i.status !== 'paid')
+    .sort((a, b) => a.installmentNum - b.installmentNum);
+  const sel = document.getElementById('payInstallment');
+  sel.innerHTML = '<option value="">-- اختر القسط --</option>' +
+    pending.map(i => `<option value="${i.id}">قسط ${i.installmentNum} - ${fmt(i.amount)} د.ع (${fmtDate(i.dueDate)})</option>`).join('');
+  if (pending.length > 0) {
+    sel.value = pending[0].id;
+    document.getElementById('payAmount').value = pending[0].amount;
+  }
+};
+
+window.savePayment = async function() {
+  const contractId = document.getElementById('payContract').value;
+  const installmentId = document.getElementById('payInstallment').value;
+  const amountPaid = Number(document.getElementById('payAmount').value);
+  const paidDate = document.getElementById('payDate').value;
+  const method = document.getElementById('payMethod').value;
+  const ref = document.getElementById('payRef').value;
+  const notes = document.getElementById('payNotes').value;
+
+  if (!contractId || !installmentId || !amountPaid || !paidDate) {
+    toast('يرجى ملء جميع الحقول المطلوبة', 'error'); return;
+  }
+
+  const paymentId = uid();
+  const payment = { id: paymentId, contractId, installmentId, amountPaid, paidDate, method, ref, notes, createdAt: new Date().toISOString() };
+
+  const { installments } = window._getData();
+  const inst = installments.find(i => i.id === installmentId);
+  if (!inst) return;
+
+  const updatedInst = { ...inst, status: 'paid' };
+
+  try {
+    await window._saveToFB('payments', payment);
+    await window._saveToFB('installments', updatedInst);
+    closeModal('paymentModal');
+    toast('تم تسجيل الدفعة بنجاح ✅', 'success');
+  } catch (e) {
+    toast('خطأ: ' + e.message, 'error');
+  }
+};
+
+// ====================================================
+// CUSTOMERS CRUD
+// ====================================================
+let editingCustomerId = null;
+
+window.openAddCustomer = function() {
+  editingCustomerId = null;
+  ['custName','custId','custPhone','custPhone2','custEmail','custAddress','custNotes'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  openModal('customerModal');
+};
+
+window.editCustomer = function(id) {
+  const { customers } = window._getData();
+  const c = customers.find(x => x.id === id);
+  if (!c) return;
+  editingCustomerId = id;
+  document.getElementById('custName').value = c.name || '';
+  document.getElementById('custId').value = c.idNumber || '';
+  document.getElementById('custPhone').value = c.phone || '';
+  document.getElementById('custPhone2').value = c.phone2 || '';
+  document.getElementById('custEmail').value = c.email || '';
+  document.getElementById('custAddress').value = c.address || '';
+  document.getElementById('custNotes').value = c.notes || '';
+  openModal('customerModal');
+};
+
+window.saveCustomer = async function() {
+  const name = document.getElementById('custName').value.trim();
+  const phone = document.getElementById('custPhone').value.trim();
+  if (!name || !phone) { toast('الاسم والهاتف مطلوبان', 'error'); return; }
+
+  const id = editingCustomerId || uid();
+  const customer = {
+    id, name, phone,
+    idNumber: document.getElementById('custId').value,
+    phone2: document.getElementById('custPhone2').value,
+    email: document.getElementById('custEmail').value,
+    address: document.getElementById('custAddress').value,
+    notes: document.getElementById('custNotes').value,
+    createdAt: new Date().toISOString()
+  };
+  try {
+    await window._saveToFB('customers', customer);
+    closeModal('customerModal');
+    toast('تم حفظ العميل', 'success');
+  } catch (e) { toast('خطأ: ' + e.message, 'error'); }
+};
+
+window.deleteCustomer = async function(id) {
+  if (!confirm('حذف العميل؟')) return;
+  await window._deleteFB('customers', id);
+  toast('تم الحذف', 'info');
+};
+
+// ====================================================
+// UNITS CRUD
+// ====================================================
+let editingUnitId = null;
+
+window.openAddUnit = function() {
+  editingUnitId = null;
+  ['unitNumber','unitArea','unitFloor','unitRooms','unitPrice','unitDesc'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('unitType').value = 'apartment';
+  openModal('unitModal');
+};
+
+window.editUnit = function(id) {
+  const { units } = window._getData();
+  const u = units.find(x => x.id === id);
+  if (!u) return;
+  editingUnitId = id;
+  document.getElementById('unitNumber').value = u.number;
+  document.getElementById('unitType').value = u.type;
+  document.getElementById('unitArea').value = u.area;
+  document.getElementById('unitFloor').value = u.floor || '';
+  document.getElementById('unitRooms').value = u.rooms || '';
+  document.getElementById('unitPrice').value = u.price;
+  document.getElementById('unitDesc').value = u.desc || '';
+  openModal('unitModal');
+};
+
+window.saveUnit = async function() {
+  const number = document.getElementById('unitNumber').value.trim();
+  const price = Number(document.getElementById('unitPrice').value);
+  const area = Number(document.getElementById('unitArea').value);
+  if (!number || !price || !area) { toast('يرجى ملء الحقول المطلوبة', 'error'); return; }
+
+  const id = editingUnitId || uid();
+  const unit = {
+    id, number, price, area,
+    type: document.getElementById('unitType').value,
+    floor: document.getElementById('unitFloor').value,
+    rooms: Number(document.getElementById('unitRooms').value || 0),
+    desc: document.getElementById('unitDesc').value,
+    status: editingUnitId ? undefined : 'available',
+    createdAt: new Date().toISOString()
+  };
+  if (!unit.status) {
+    const { units } = window._getData();
+    const existing = units.find(x => x.id === id);
+    unit.status = existing?.status || 'available';
+  }
+  try {
+    await window._saveToFB('units', unit);
+    closeModal('unitModal');
+    toast('تم حفظ الوحدة', 'success');
+  } catch (e) { toast('خطأ: ' + e.message, 'error'); }
+};
+
+window.deleteUnit = async function(id) {
+  if (!confirm('حذف الوحدة؟')) return;
+  await window._deleteFB('units', id);
+  toast('تم الحذف', 'info');
+};
+
+// ====================================================
+// TOAST
+// ====================================================
+window.toast = function(msg, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
+  const div = document.createElement('div');
+  div.className = `toast ${type}`;
+  div.innerHTML = `<span>${icons[type] || ''}</span> ${msg}`;
+  container.appendChild(div);
+  setTimeout(() => { div.style.opacity = '0'; div.style.transform = 'translateX(-30px)'; setTimeout(() => div.remove(), 300); }, 3000);
+};
+
+// ====================================================
+// EXPORT / PRINT
+// ====================================================
+window.exportData = function() {
+  const data = window._getData();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `installments-backup-${today()}.json`;
+  a.click();
+  toast('تم التصدير بنجاح', 'success');
+};
+
+window.printReport = function() {
+  window.print();
+};
+
+// ====================================================
+// SET DEFAULT MONTH FILTER
+// ====================================================
+document.addEventListener('DOMContentLoaded', () => {
+  const monthFilter = document.getElementById('monthFilter');
+  if (monthFilter) {
+    const now = new Date();
+    monthFilter.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  }
+});
+</script>
+
+<!-- ============================================================
+     PWA: Service Worker + Install Prompt + Offline Queue
+     ============================================================ -->
+<script>
+// ====================================================
+// SERVICE WORKER REGISTRATION
+// ====================================================
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', async () => {
+    try {
+      const reg = await navigator.serviceWorker.register('./sw.js', { scope: './' });
+      console.log('[PWA] Service Worker registered:', reg.scope);
+
+      // Listen for SW messages
+      navigator.serviceWorker.addEventListener('message', e => {
+        if (e.data?.type === 'SYNC_NOW') {
+          processOfflineQueue();
+        }
+      });
+
+      // Check for updates
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            toast('يتوفر تحديث جديد! أعد تحميل الصفحة', 'info');
+          }
+        });
+      });
+
+    } catch (err) {
+      console.warn('[PWA] SW registration failed:', err);
+    }
+  });
+}
+
+// ====================================================
+// OFFLINE QUEUE — عمليات معلقة لحين عودة الإنترنت
+// ====================================================
+const QUEUE_KEY = 'installments_offline_queue';
+
+function getQueue() {
+  try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]'); }
+  catch { return []; }
+}
+
+function saveQueue(q) {
+  localStorage.setItem(QUEUE_KEY, JSON.stringify(q));
+  updatePendingBadge(q.length);
+}
+
+function enqueue(operation) {
+  const q = getQueue();
+  q.push({ ...operation, queuedAt: new Date().toISOString(), id: Date.now().toString(36) });
+  saveQueue(q);
+  console.log('[Offline Queue] Enqueued:', operation.type, operation.store);
+}
+
+function updatePendingBadge(count) {
+  const badge = document.getElementById('pendingBadge');
+  const cnt = document.getElementById('pendingCount');
+  if (!badge || !cnt) return;
+  if (count > 0) {
+    badge.classList.add('show');
+    cnt.textContent = count;
+  } else {
+    badge.classList.remove('show');
+  }
+}
+
+// Override save/delete functions to use queue when offline
+const _origSaveToFB = window._saveToFB;
+const _origDeleteFB = window._deleteFB;
+
+window._saveToFB = async function(store, data) {
+  if (!navigator.onLine) {
+    await window._idbPut(store, data);
+    enqueue({ type: 'set', store, data });
+    window._refreshAll();
+    return;
+  }
+  try {
+    await _origSaveToFB(store, data);
+  } catch (e) {
+    // Firebase failed → queue it
+    await window._idbPut(store, data);
+    enqueue({ type: 'set', store, data });
+    window._refreshAll();
+    console.warn('[Offline Queue] Firebase failed, queued:', e.message);
+  }
+};
+
+window._deleteFB = async function(store, id) {
+  if (!navigator.onLine) {
+    await window._idbDelete(store, id);
+    enqueue({ type: 'delete', store, id });
+    window._refreshAll();
+    return;
+  }
+  try {
+    await _origDeleteFB(store, id);
+  } catch (e) {
+    await window._idbDelete(store, id);
+    enqueue({ type: 'delete', store, id });
+    window._refreshAll();
+  }
+};
+
+// Process the offline queue when back online
+async function processOfflineQueue() {
+  const q = getQueue();
+  if (!q.length) return;
+
+  if (!navigator.onLine) return;
+
+  showSyncBar();
+  console.log(`[Offline Queue] Processing ${q.length} pending operations...`);
+
+  const successful = [];
+  for (const op of q) {
+    try {
+      if (op.type === 'set') {
+        await _origSaveToFB(op.store, op.data);
+      } else if (op.type === 'delete') {
+        await _origDeleteFB(op.store, op.id);
+      }
+      successful.push(op.id);
+    } catch (e) {
+      console.warn('[Offline Queue] Failed to sync op:', op, e);
+    }
+  }
+
+  // Remove successfully synced ops
+  const remaining = q.filter(op => !successful.includes(op.id));
+  saveQueue(remaining);
+
+  hideSyncBar();
+
+  if (successful.length > 0) {
+    toast(`تمت مزامنة ${successful.length} عملية بنجاح ✅`, 'success');
+  }
+  if (remaining.length > 0) {
+    toast(`${remaining.length} عملية لم تُزامن، ستُعاد المحاولة`, 'warning');
+  }
+}
+
+function showSyncBar() {
+  const bar = document.getElementById('syncBar');
+  if (bar) bar.classList.add('show');
+}
+
+function hideSyncBar() {
+  const bar = document.getElementById('syncBar');
+  if (bar) {
+    setTimeout(() => bar.classList.remove('show'), 1500);
+  }
+}
+
+// ====================================================
+// ONLINE / OFFLINE EVENTS
+// ====================================================
+function onOffline() {
+  const bar = document.getElementById('offlineBar');
+  if (bar) bar.classList.add('show');
+  toast('انقطع الاتصال — البرنامج يعمل أوفلاين', 'warning');
+}
+
+function onOnline() {
+  const bar = document.getElementById('offlineBar');
+  if (bar) bar.classList.remove('show');
+  toast('عاد الاتصال — جارٍ مزامنة البيانات...', 'info');
+
+  // Trigger background sync if supported
+  if ('serviceWorker' in navigator && 'SyncManager' in window) {
+    navigator.serviceWorker.ready.then(reg => {
+      reg.sync.register('firebase-sync').catch(() => {
+        // Fallback: direct process
+        setTimeout(processOfflineQueue, 1000);
+      });
+    });
+  } else {
+    setTimeout(processOfflineQueue, 1000);
+  }
+}
+
+window.addEventListener('online', onOnline);
+window.addEventListener('offline', onOffline);
+
+// Check initial state
+if (!navigator.onLine) {
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('offlineBar')?.classList.add('show');
+  });
+}
+
+// Init badge
+document.addEventListener('DOMContentLoaded', () => {
+  updatePendingBadge(getQueue().length);
+});
+
+// ====================================================
+// PWA INSTALL PROMPT
+// ====================================================
+let deferredInstallPrompt = null;
+let installDismissed = false;
+
+// Capture the install prompt
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+
+  // Show mini install button in topbar
+  const miniBtn = document.getElementById('installMiniBtn');
+  if (miniBtn) miniBtn.classList.add('visible');
+
+  // Auto-show full prompt after 3 seconds (only first time)
+  const dismissed = localStorage.getItem('pwa_install_dismissed');
+  if (!dismissed) {
+    setTimeout(() => showInstallPrompt(), 3000);
+  }
+});
+
+// App installed event
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  const miniBtn = document.getElementById('installMiniBtn');
+  if (miniBtn) miniBtn.classList.remove('visible');
+  hideInstallPrompt();
+  toast('تم تثبيت التطبيق بنجاح! 🎉', 'success');
+  localStorage.setItem('pwa_installed', 'true');
+});
+
+window.showInstallPrompt = function() {
+  if (!deferredInstallPrompt) {
+    // Already installed or not available
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      toast('التطبيق مثبت بالفعل على جهازك ✅', 'info');
+    } else {
+      toast('المتصفح لا يدعم التثبيت التلقائي. افتح القائمة واختر "إضافة إلى الشاشة الرئيسية"', 'info');
+    }
+    return;
+  }
+  const overlay = document.getElementById('installOverlay');
+  if (overlay) overlay.classList.add('show');
+};
+
+window.hideInstallPrompt = function() {
+  const overlay = document.getElementById('installOverlay');
+  if (overlay) overlay.classList.remove('show');
+};
+
+window.triggerInstall = async function() {
+  if (!deferredInstallPrompt) return;
+  const btn = document.getElementById('installConfirmBtn');
+  if (btn) {
+    btn.innerHTML = '<div class="loading-spinner"></div> جارٍ التثبيت...';
+    btn.disabled = true;
+  }
+  try {
+    deferredInstallPrompt.prompt();
+    const { outcome } = await deferredInstallPrompt.userChoice;
+    if (outcome === 'accepted') {
+      toast('ممتاز! جارٍ تثبيت التطبيق... 🎉', 'success');
+    } else {
+      toast('يمكنك التثبيت لاحقاً من زر "تثبيت" أعلى الصفحة', 'info');
+    }
+  } catch (e) {
+    console.error('Install error:', e);
+  }
+  deferredInstallPrompt = null;
+  hideInstallPrompt();
+  if (btn) { btn.innerHTML = '📲 تثبيت التطبيق الآن'; btn.disabled = false; }
+};
+
+window.dismissInstall = function() {
+  hideInstallPrompt();
+  localStorage.setItem('pwa_install_dismissed', Date.now().toString());
+  // Hide mini button temporarily
+  setTimeout(() => {
+    const miniBtn = document.getElementById('installMiniBtn');
+    if (miniBtn && deferredInstallPrompt) miniBtn.classList.add('visible');
+  }, 10000);
+};
+
+// Swipe down to close install sheet
+const sheet = document.getElementById('installSheet');
+if (sheet) {
+  let startY = 0;
+  sheet.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
+  sheet.addEventListener('touchend', e => {
+    const diff = e.changedTouches[0].clientY - startY;
+    if (diff > 80) dismissInstall();
+  }, { passive: true });
+}
+
+// Check if already running as PWA
+if (window.matchMedia('(display-mode: standalone)').matches) {
+  console.log('[PWA] Running as installed app');
+  document.title = 'نظام الأقساط';
+}
+
+// ====================================================
+// HASH-BASED SHORTCUTS (from manifest shortcuts)
+// ====================================================
+window.addEventListener('DOMContentLoaded', () => {
+  const hash = location.hash;
+  if (hash === '#new-contract') {
+    setTimeout(() => window.openAddContract?.(), 500);
+  } else if (hash === '#new-payment') {
+    setTimeout(() => window.openReceivePayment?.(), 500);
+  }
+});
+</script>
+</body>
+</html>
