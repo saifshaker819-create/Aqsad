@@ -578,17 +578,29 @@ textarea.fc{height:auto;padding:11px 13px;resize:vertical;min-height:68px;}
 <!-- FIREBASE + IDB -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot }
+import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, enableIndexedDbPersistence }
   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const cfg={apiKey:"AIzaSyDq4xo8Wiy9mKIFBvSz20fruQ9O_iYCpj8",authDomain:"neonchat-d1422.firebaseapp.com",projectId:"neonchat-d1422",storageBucket:"neonchat-d1422.firebasestorage.app",messagingSenderId:"877003108074",appId:"1:877003108074:web:8445b882b806c51278b193"};
-const db=getFirestore(initializeApp(cfg));
+
+const app=initializeApp(cfg);
+const db=getFirestore(app);
+
+// تفعيل Offline Persistence في Firestore نفسه
+try{ await enableIndexedDbPersistence(db); }catch(e){}
 
 const IDB='AqsatDB3';let idb;
 function oIDB(){return new Promise((res,rej)=>{const r=indexedDB.open(IDB,1);r.onupgradeneeded=e=>{const d=e.target.result;['customers','sales','installments','payments'].forEach(s=>{if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:'id'});});};r.onsuccess=e=>res(e.target.result);r.onerror=rej;});}
 async function ia(s){return new Promise((res,rej)=>{const t=idb.transaction(s,'readonly');const r=t.objectStore(s).getAll();r.onsuccess=()=>res(r.result);r.onerror=rej;});}
 async function ip(s,item){return new Promise((res,rej)=>{const t=idb.transaction(s,'readwrite');t.objectStore(s).put(item);t.oncomplete=res;t.onerror=rej;});}
 async function id2(s,id){return new Promise((res,rej)=>{const t=idb.transaction(s,'readwrite');t.objectStore(s).delete(id);t.oncomplete=res;t.onerror=rej;});}
+
+// ── Throttle _ref calls (لا تشغّل أكثر من مرة كل 300ms) ──
+let _refTimer=null;
+function scheduleRef(){
+  if(_refTimer)clearTimeout(_refTimer);
+  _refTimer=setTimeout(()=>{if(window._ref)window._ref();_refTimer=null;},300);
+}
 
 function syncS(store){
   onSnapshot(collection(db,store),async snap=>{
@@ -599,18 +611,27 @@ function syncS(store){
       await ip(store,data);fids.add(d.id);
     }
     for(const item of ex){if(!fids.has(item.id))await id2(store,item.id);}
-    if(window._ref)window._ref();
-  },err=>console.warn('[FB sync error]',store,err));
+    scheduleRef();
+  },err=>{
+    const msg=err?.code||err?.message||'';
+    if(msg.includes('permission')||msg.includes('PERMISSION_DENIED')){
+      window._fbBlocked=true;
+      console.error('[Firebase] ❌ Security Rules تمنع الوصول — افتح Firebase Console وعدّل القواعد');
+    }else{
+      console.warn('[FB sync error]',store,msg);
+    }
+  });
 }
 
 idb=await oIDB();
 ['customers','sales','installments','payments'].forEach(syncS);
 
-// Expose IDB helpers
 window._ip=ip;
 window._id=id2;
-// Expose Firebase direct write/delete (used by offline queue)
-window._fbs=async(s,d)=>{const clean={};for(const k of Object.keys(d)){if(d[k]!==undefined)clean[k]=d[k];}return setDoc(doc(db,s,clean.id),clean);};
+window._fbs=async(s,d)=>{
+  const clean={};for(const k of Object.keys(d)){if(d[k]!==undefined)clean[k]=d[k];}
+  return setDoc(doc(db,s,clean.id),clean);
+};
 window._fbd=async(s,id)=>deleteDoc(doc(db,s,id));
 
 async function loadAll(){
@@ -637,6 +658,8 @@ const isSoon=(d,dy=14)=>{if(!d)return false;const df=(new Date(d)-new Date())/86
 const ini=n=>{if(!n)return'?';const p=n.trim().split(' ');return p.length>=2?p[0][0]+p[1][0]:p[0].slice(0,2);};
 const addM=(d,n)=>{const dt=new Date(d);dt.setMonth(dt.getMonth()+n);return dt.toISOString().split('T')[0];};
 const D=()=>window._d||{c:[],s:[],i:[],p:[]};
+// scheduleRef defined in module — fallback
+function scheduleRef(){if(window._ref)window._ref();}
 
 // TABS
 window.sw=function(name,tabEl,navEl){
@@ -1118,44 +1141,75 @@ const sQ=q=>{localStorage.setItem(QK,JSON.stringify(q));updPB(q.length);};
 const enq=op=>{const q=gQ();q.push({...op,qid:uid(),at:new Date().toISOString()});sQ(q);};
 function updPB(n){const b=document.getElementById('pb'),c=document.getElementById('pc');if(!b||!c)return;if(n>0){b.classList.add('on');c.textContent=n;}else b.classList.remove('on');}
 
-// _save/_del: write to IDB immediately, also try Firebase directly; if offline enqueue
+function isFbPermError(e){
+  const m=e?.code||e?.message||'';
+  return m.includes('permission')||m.includes('PERMISSION_DENIED')||m.includes('Missing or insufficient');
+}
+
 window._save=async function(store,data){
-  // Always write to IDB first (for instant UI)
   await window._ip(store,data);
-  if(!navigator.onLine){
-    enq({t:'s',store,data});
-    if(window._ref)window._ref();
-    return;
-  }
+  if(!navigator.onLine){enq({t:'s',store,data});scheduleRef();return;}
   try{
     await window._fbs(store,data);
-    // success — remove from queue if it was there
     const q=gQ();const nq=q.filter(x=>!(x.t==='s'&&x.store===store&&x.data?.id===data.id));if(nq.length!==q.length)sQ(nq);
   }catch(e){
-    console.warn('[_save Firebase failed, queuing]',store,e.message);
-    enq({t:'s',store,data});
+    if(isFbPermError(e)){
+      window._fbBlocked=true;
+      showFbRulesAlert();
+    }else{
+      enq({t:'s',store,data});
+    }
   }
-  if(window._ref)window._ref();
+  scheduleRef();
 };
 
 window._del=async function(store,id){
   await window._id(store,id);
-  if(!navigator.onLine){
-    enq({t:'d',store,id});
-    if(window._ref)window._ref();
-    return;
-  }
+  if(!navigator.onLine){enq({t:'d',store,id});scheduleRef();return;}
   try{
     await window._fbd(store,id);
   }catch(e){
-    console.warn('[_del Firebase failed, queuing]',store,e.message);
-    enq({t:'d',store,id});
+    if(isFbPermError(e)){window._fbBlocked=true;showFbRulesAlert();}
+    else enq({t:'d',store,id});
   }
-  if(window._ref)window._ref();
+  scheduleRef();
 };
+
+// إظهار تنبيه قواعد Firebase مرة واحدة فقط
+let _rulesAlertShown=false;
+function showFbRulesAlert(){
+  if(_rulesAlertShown)return;_rulesAlertShown=true;
+  const d=document.createElement('div');
+  d.style.cssText='position:fixed;inset:0;background:rgba(15,23,42,.7);backdrop-filter:blur(10px);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  d.innerHTML=`<div style="background:#fff;border-radius:20px;padding:28px 24px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);font-family:Tajawal,sans-serif;direction:rtl">
+    <div style="font-size:38px;text-align:center;margin-bottom:12px">🔐</div>
+    <div style="font-size:18px;font-weight:900;color:#0f172a;text-align:center;margin-bottom:8px">يجب ضبط قواعد Firebase</div>
+    <div style="font-size:13px;color:#64748b;margin-bottom:18px;line-height:1.7">
+      Firebase يرفض الكتابة بسبب Security Rules. لإصلاحه:<br>
+      <b style="color:#1a6fd4">١.</b> افتح <b>console.firebase.google.com</b><br>
+      <b style="color:#1a6fd4">٢.</b> اختر مشروع <b>neonchat-d1422</b><br>
+      <b style="color:#1a6fd4">٣.</b> Firestore Database → <b>Rules</b><br>
+      <b style="color:#1a6fd4">٤.</b> انسخ القواعد أدناه والصقها واضغط <b>Publish</b>
+    </div>
+    <div style="background:#0f172a;border-radius:10px;padding:12px;font-family:monospace;font-size:12px;color:#4ade80;margin-bottom:16px;user-select:all;direction:ltr">
+rules_version = '2';<br>
+service cloud.firestore {<br>
+&nbsp;&nbsp;match /databases/{database}/documents {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;match /{document=**} {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allow read, write: if true;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;}<br>
+}
+    </div>
+    <div style="font-size:11px;color:#94a3b8;margin-bottom:16px;text-align:center">البرنامج يعمل محلياً — البيانات محفوظة على جهازك</div>
+    <button onclick="this.closest('div[style]').remove()" style="width:100%;height:44px;background:linear-gradient(135deg,#1a6fd4,#0ea5e9);border:none;border-radius:12px;color:#fff;font-family:Tajawal,sans-serif;font-size:15px;font-weight:700;cursor:pointer">فهمت ✓</button>
+  </div>`;
+  document.body.appendChild(d);
+}
 
 async function procQ(){
   const q=gQ();if(!q.length||!navigator.onLine)return;
+  if(window._fbBlocked){showFbRulesAlert();return;}
   document.getElementById('sb')?.classList.add('show');
   const ok=[];
   for(const op of q){
@@ -1163,12 +1217,16 @@ async function procQ(){
       if(op.t==='s')await window._fbs(op.store,op.data);
       else if(op.t==='d')await window._fbd(op.store,op.id);
       ok.push(op.qid);
-    }catch(e){console.warn('[procQ] failed op:',op.store,e.message);}
+    }catch(e){
+      if(isFbPermError(e)){window._fbBlocked=true;showFbRulesAlert();break;}
+      console.warn('[procQ]',op.store,e.message);
+    }
   }
   sQ(q.filter(x=>!ok.includes(x.qid)));
   setTimeout(()=>document.getElementById('sb')?.classList.remove('show'),1500);
   if(ok.length)toast(`تمت مزامنة ${ok.length} عملية ✅`,'s');
-  if(q.length-ok.length>0)toast(`${q.length-ok.length} عملية لم تزامن، ستُعاد المحاولة`,'w');
+  const rem=gQ().length;
+  if(rem>0&&!window._fbBlocked)toast(`${rem} عملية لم تزامن`,'w');
 }
 
 window.addEventListener('online',()=>{document.getElementById('ob')?.classList.remove('show');toast('عاد الاتصال — جارٍ المزامنة...','i');setTimeout(procQ,800);});
@@ -1208,11 +1266,42 @@ if('serviceWorker' in navigator){
 
 // INIT
 document.addEventListener('DOMContentLoaded',()=>{
-  const mf=document.getElementById('mf');if(mf){const n=new Date();mf.value=`${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}`;}
   updPB(gQ().length);
   if(location.hash==='#new')setTimeout(()=>openAddSale(),500);
   if(location.hash==='#pay')setTimeout(()=>openPayM(),500);
+  // تشغيل المزامنة عند فتح البرنامج إذا كان هناك عمليات معلقة
+  if(navigator.onLine&&gQ().length>0){
+    setTimeout(procQ,2000);
+  }
 });
+
+// ══════════════════════════════════════════
+// الحماية — منع الوصول للكود
+// ══════════════════════════════════════════
+(function(){
+  // منع الزر الأيمن
+  document.addEventListener('contextmenu',e=>e.preventDefault());
+  // منع F12 و Ctrl+Shift+I/J/U/C وغيرها
+  document.addEventListener('keydown',e=>{
+    const k=e.key?.toLowerCase();
+    if(e.key==='F12'){e.preventDefault();return false;}
+    if((e.ctrlKey||e.metaKey)&&e.shiftKey&&['i','j','c','k'].includes(k)){e.preventDefault();return false;}
+    if((e.ctrlKey||e.metaKey)&&k==='u'){e.preventDefault();return false;}
+  });
+  // كشف DevTools (طريقة الحجم)
+  const threshold=160;
+  setInterval(()=>{
+    if(window.outerWidth-window.innerWidth>threshold||window.outerHeight-window.innerHeight>threshold){
+      document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:Tajawal,sans-serif;font-size:22px;font-weight:900;color:#1a6fd4;background:#f0f7ff;flex-direction:column;gap:14px"><div style="font-size:52px">🔒</div><div>هذا البرنامج محمي</div></div>';
+    }
+  },1000);
+  // منع تحديد النص
+  document.addEventListener('selectstart',e=>{
+    if(!['INPUT','TEXTAREA'].includes(e.target.tagName))e.preventDefault();
+  });
+  // منع السحب
+  document.addEventListener('dragstart',e=>e.preventDefault());
+})();
 </script>
 </body>
 </html>
