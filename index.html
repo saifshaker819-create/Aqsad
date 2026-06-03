@@ -366,18 +366,17 @@ textarea.fc{height:auto;padding:11px 13px;resize:vertical;min-height:68px;}
     <div class="ta">
       <span id="pb">⏳ <span id="pc">0</span></span>
       <button id="imb" onclick="showI()">📲 تثبيت</button>
-      <button class="tb pr" onclick="openAddSale()">＋ قسط</button>
     </div>
   </div>
 
   <!-- STATS -->
   <div class="sts">
-    <div class="sc"><div class="si b">📋</div><div><div class="sl">إجمالي الأقساط</div><div class="sv" id="s1">0</div></div></div>
+    <div class="sc" style="cursor:pointer" onclick="sw('sales',null,document.querySelectorAll('.nb')[1])"><div class="si b">📋</div><div><div class="sl">إجمالي الأقساط</div><div class="sv" id="s1">0</div></div></div>
     <div class="sc"><div class="si g">✅</div><div><div class="sl">محصّل هذا الشهر</div><div class="sv" id="s2">0</div><div class="ss">د.ع</div></div></div>
-    <div class="sc"><div class="si a">⏰</div><div><div class="sl">مستحق الشهر</div><div class="sv" id="s3">0</div><div class="ss">د.ع</div></div></div>
-    <div class="sc"><div class="si r">⚠️</div><div><div class="sl">دفعات متأخرة</div><div class="sv" id="s4">0</div></div></div>
+    <div class="sc" style="cursor:pointer;transition:box-shadow .2s" onclick="showDueModal()" id="sc3"><div class="si a">⏰</div><div><div class="sl">مستحق الشهر</div><div class="sv" id="s3">0</div><div class="ss">د.ع — اضغط للتفاصيل</div></div></div>
+    <div class="sc" style="cursor:pointer;transition:box-shadow .2s" onclick="showLateModal()" id="sc4"><div class="si r">⚠️</div><div><div class="sl">دفعات متأخرة</div><div class="sv" id="s4">0</div><div class="ss">اضغط للتفاصيل</div></div></div>
     <div class="sc"><div class="si p">💰</div><div><div class="sl">إجمالي القيمة</div><div class="sv" id="s5">0</div><div class="ss">د.ع</div></div></div>
-    <div class="sc"><div class="si s">👥</div><div><div class="sl">الزبائن</div><div class="sv" id="s6">0</div></div></div>
+    <div class="sc" style="cursor:pointer" onclick="showAllCustsModal()"><div class="si s">👥</div><div><div class="sl">الزبائن</div><div class="sv" id="s6">0</div><div class="ss">اضغط للعرض</div></div></div>
   </div>
 
   <div class="main">
@@ -386,7 +385,6 @@ textarea.fc{height:auto;padding:11px 13px;resize:vertical;min-height:68px;}
       <div class="tabs">
         <button class="tab on" onclick="sw('overview',this)">🏠 الرئيسية</button>
         <button class="tab" onclick="sw('sales',this)">📦 الأقساط</button>
-        <button class="tab" onclick="sw('pays',this)">💳 الدفعات</button>
         <button class="tab" onclick="sw('custs',this)">👥 الزبائن</button>
       </div>
     </div>
@@ -416,22 +414,6 @@ textarea.fc{height:auto;padding:11px 13px;resize:vertical;min-height:68px;}
       <div id="salesL" class="cl"></div>
     </div>
 
-    <!-- PAYMENTS -->
-    <div id="p-pays" class="panel">
-      <div class="bar2">
-        <div class="sw"><span class="swi">🔍</span><input type="text" placeholder="بحث..." oninput="rPays(this.value)"></div>
-        <select class="flt" onchange="fPaysSt(this.value)">
-          <option value="">كل الحالات</option>
-          <option value="paid">مدفوعة</option>
-          <option value="pending">معلقة</option>
-          <option value="late">متأخرة</option>
-        </select>
-        <input type="month" class="flt" id="mf" onchange="fPaysM(this.value)">
-        <button class="btn bgr" onclick="openPayM()">＋ دفعة</button>
-      </div>
-      <div id="paysL" class="cl"></div>
-    </div>
-
     <!-- CUSTOMERS -->
     <div id="p-custs" class="panel">
       <div class="bar2">
@@ -447,7 +429,6 @@ textarea.fc{height:auto;padding:11px 13px;resize:vertical;min-height:68px;}
 <div class="bnav">
   <button class="nb on" onclick="sw('overview',null,this)"><span class="ni">🏠</span>الرئيسية</button>
   <button class="nb" onclick="sw('sales',null,this)"><span class="ni">📦</span>الأقساط</button>
-  <button class="nb" onclick="sw('pays',null,this)"><span class="ni">💳</span>الدفعات</button>
   <button class="nb" onclick="sw('custs',null,this)"><span class="ni">👥</span>الزبائن</button>
 </div>
 
@@ -480,15 +461,18 @@ textarea.fc{height:auto;padding:11px 13px;resize:vertical;min-height:68px;}
         </div>
       </div>
       <div class="fg2">
-        <div class="fg"><label class="fl">السعر الكلي (د.ع) *</label><input type="number" class="fc" id="sTotal" placeholder="0" oninput="calcS()" required></div>
-        <div class="fg"><label class="fl">الدفعة المقدمة</label><input type="number" class="fc" id="sDown" placeholder="0" oninput="calcS()"></div>
+        <div class="fg"><label class="fl">السعر الأصلي (د.ع) *</label><input type="number" class="fc" id="sTotal" placeholder="0" oninput="calcS()" required></div>
+        <div class="fg"><label class="fl">نسبة الفائدة %</label><input type="number" class="fc" id="sInterest" placeholder="0" min="0" step="0.1" oninput="calcS()" value="0"></div>
+        <div class="fg"><label class="fl">الدفعة المقدمة (د.ع)</label><input type="number" class="fc" id="sDown" placeholder="0" oninput="calcS()"></div>
         <div class="fg"><label class="fl">عدد الأقساط *</label><input type="number" class="fc" id="sCount" placeholder="12" min="1" max="120" oninput="calcS()" required></div>
         <div class="fg"><label class="fl">تاريخ أول قسط *</label><input type="date" class="fc" id="sFirst" required></div>
       </div>
       <div class="cb" id="calcB" style="display:none">
+        <div class="cr"><span class="crl">السعر الأصلي</span><span class="crv" id="c0">—</span></div>
+        <div class="cr"><span class="crl">قيمة الفائدة</span><span class="crv" id="cInt" style="color:var(--or)">—</span></div>
+        <div class="cr"><span class="crl">السعر الإجمالي (مع الفائدة)</span><span class="crv big" id="cTot">—</span></div>
         <div class="cr"><span class="crl">المتبقي بعد المقدم</span><span class="crv" id="c1">—</span></div>
         <div class="cr"><span class="crl">قيمة القسط الشهري</span><span class="crv big" id="c2">—</span></div>
-        <div class="cr"><span class="crl">إجمالي الأقساط</span><span class="crv" id="c3">—</span></div>
       </div>
       <div class="fg"><label class="fl">ملاحظات</label><textarea class="fc" id="sNotes" placeholder="ملاحظات..."></textarea></div>
     </div>
@@ -558,6 +542,39 @@ textarea.fc{height:auto;padding:11px 13px;resize:vertical;min-height:68px;}
   </div>
 </div>
 
+<!-- DUE THIS MONTH MODAL -->
+<div class="mo" id="dueM">
+  <div class="md">
+    <div class="mh2"></div>
+    <div class="mhd"><div><div class="mtt">⏰ مستحق هذا الشهر</div><div style="font-size:12px;color:var(--t3);margin-top:2px" id="dueMSub"></div></div><button class="mcl" onclick="cM('dueM')">✕</button></div>
+    <div class="mb" id="dueMBody"></div>
+    <div class="mf"><button class="btn bgh" onclick="cM('dueM')">إغلاق</button></div>
+  </div>
+</div>
+
+<!-- LATE MODAL -->
+<div class="mo" id="lateM">
+  <div class="md">
+    <div class="mh2"></div>
+    <div class="mhd"><div><div class="mtt">🔴 الدفعات المتأخرة</div><div style="font-size:12px;color:var(--t3);margin-top:2px" id="lateMSub"></div></div><button class="mcl" onclick="cM('lateM')">✕</button></div>
+    <div class="mb" id="lateMBody"></div>
+    <div class="mf"><button class="btn bgh" onclick="cM('lateM')">إغلاق</button></div>
+  </div>
+</div>
+
+<!-- ALL CUSTOMERS MODAL -->
+<div class="mo" id="allCustsM">
+  <div class="md">
+    <div class="mh2"></div>
+    <div class="mhd"><div><div class="mtt">👥 كل الزبائن</div><div style="font-size:12px;color:var(--t3);margin-top:2px" id="allCustsSub"></div></div><button class="mcl" onclick="cM('allCustsM')">✕</button></div>
+    <div class="mb">
+      <div class="fg" style="margin-bottom:12px"><input type="text" class="fc" placeholder="🔍 بحث سريع..." oninput="filterAllCusts(this.value)" id="allCustsSearch"></div>
+      <div id="allCustsBody"></div>
+    </div>
+    <div class="mf"><button class="btn bgh" onclick="cM('allCustsM')">إغلاق</button></div>
+  </div>
+</div>
+
 <!-- FIREBASE + IDB -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
@@ -567,23 +584,46 @@ import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot }
 const cfg={apiKey:"AIzaSyDq4xo8Wiy9mKIFBvSz20fruQ9O_iYCpj8",authDomain:"neonchat-d1422.firebaseapp.com",projectId:"neonchat-d1422",storageBucket:"neonchat-d1422.firebasestorage.app",messagingSenderId:"877003108074",appId:"1:877003108074:web:8445b882b806c51278b193"};
 const db=getFirestore(initializeApp(cfg));
 
-const IDB='AqsatDB2';let idb;
+const IDB='AqsatDB3';let idb;
 function oIDB(){return new Promise((res,rej)=>{const r=indexedDB.open(IDB,1);r.onupgradeneeded=e=>{const d=e.target.result;['customers','sales','installments','payments'].forEach(s=>{if(!d.objectStoreNames.contains(s))d.createObjectStore(s,{keyPath:'id'});});};r.onsuccess=e=>res(e.target.result);r.onerror=rej;});}
 async function ia(s){return new Promise((res,rej)=>{const t=idb.transaction(s,'readonly');const r=t.objectStore(s).getAll();r.onsuccess=()=>res(r.result);r.onerror=rej;});}
 async function ip(s,item){return new Promise((res,rej)=>{const t=idb.transaction(s,'readwrite');t.objectStore(s).put(item);t.oncomplete=res;t.onerror=rej;});}
 async function id2(s,id){return new Promise((res,rej)=>{const t=idb.transaction(s,'readwrite');t.objectStore(s).delete(id);t.oncomplete=res;t.onerror=rej;});}
 
-function syncS(store){onSnapshot(collection(db,store),async snap=>{const ex=await ia(store);const fids=new Set();for(const d of snap.docs){const data={...d.data(),id:d.id};for(const k of Object.keys(data)){if(data[k]&&typeof data[k]==='object'&&data[k].seconds)data[k]=new Date(data[k].seconds*1000).toISOString();}await ip(store,data);fids.add(d.id);}for(const item of ex){if(!fids.has(item.id))await id2(store,item.id);}window._ref();});}
+function syncS(store){
+  onSnapshot(collection(db,store),async snap=>{
+    const ex=await ia(store);const fids=new Set();
+    for(const d of snap.docs){
+      const data={...d.data(),id:d.id};
+      for(const k of Object.keys(data)){if(data[k]&&typeof data[k]==='object'&&data[k].seconds)data[k]=new Date(data[k].seconds*1000).toISOString();}
+      await ip(store,data);fids.add(d.id);
+    }
+    for(const item of ex){if(!fids.has(item.id))await id2(store,item.id);}
+    if(window._ref)window._ref();
+  },err=>console.warn('[FB sync error]',store,err));
+}
 
 idb=await oIDB();
 ['customers','sales','installments','payments'].forEach(syncS);
 
-window._ip=ip;window._id=id2;
-window._fbs=async(s,d)=>setDoc(doc(db,s,d.id),d);
+// Expose IDB helpers
+window._ip=ip;
+window._id=id2;
+// Expose Firebase direct write/delete (used by offline queue)
+window._fbs=async(s,d)=>{const clean={};for(const k of Object.keys(d)){if(d[k]!==undefined)clean[k]=d[k];}return setDoc(doc(db,s,clean.id),clean);};
 window._fbd=async(s,id)=>deleteDoc(doc(db,s,id));
 
-async function loadAll(){const[c,s,i,p]=await Promise.all([ia('customers'),ia('sales'),ia('installments'),ia('payments')]);window._d={c,s,i,p};}
-window._ref=async function(){await loadAll();rStats();rOv();rSales();rPays();rCusts();};
+async function loadAll(){
+  const[c,s,i,p]=await Promise.all([ia('customers'),ia('sales'),ia('installments'),ia('payments')]);
+  window._d={c,s,i,p};
+}
+window._ref=async function(){
+  await loadAll();
+  if(window.rStats)rStats();
+  if(window.rOv)rOv();
+  if(window.rSales)rSales();
+  if(window.rCusts)rCusts();
+};
 await window._ref();
 </script>
 
@@ -678,16 +718,18 @@ window.rSales=function(srch=''){
     const cu=c.find(z=>z.id===x.customerId)||{};
     const bd=x.st==='done'?'<span class="badge bgr2">✅ مكتمل</span>':x.st==='late'?'<span class="badge brd2">⚠️ متأخر</span>':'<span class="badge bbl">🔵 نشط</span>';
     const nd=x.inst.filter(z=>z.status!=='paid').sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate))[0];
+    const hasInt=x.interestRate>0;
     return`<div class="ic${x.st==='late'?' late':x.st==='done'?' done':''}">
       <div class="ich">
         <div>
-          <div class="ict">📦 ${x.itemName||'—'} <span style="font-size:11px;color:var(--t4);font-weight:400">${x.category||''}</span></div>
-          <div class="ics">👤 ${cu.name||'—'} ${cu.phone?'• '+cu.phone:''}</div>
+          <div class="ict" style="color:#000;font-weight:900;font-size:16px">${cu.name||'—'} ${cu.phone?`<span style="color:#000;font-weight:700;font-size:13px">• ${cu.phone}</span>`:''}</div>
+          <div class="ics" style="margin-top:3px">📦 ${x.itemName||'—'} <span style="font-size:11px;color:var(--t4)">${x.category||''}</span></div>
         </div>
         ${bd}
       </div>
       <div class="icg">
-        <div><div class="ifl">السعر الكلي</div><div class="ifv big">${fmt(x.totalAmount)} د.ع</div></div>
+        <div><div class="ifl">السعر الأصلي</div><div class="ifv">${fmt(x.basePrice||x.totalAmount)} د.ع</div></div>
+        <div><div class="ifl">السعر الإجمالي${hasInt?` <span style="color:var(--or);font-size:10px">(+${x.interestRate}%)</span>`:''}</div><div class="ifv big">${fmt(x.totalAmount)} د.ع</div></div>
         <div><div class="ifl">القسط الشهري</div><div class="ifv big">${fmt(x.installmentAmount)} د.ع</div></div>
         <div><div class="ifl">المحصّل</div><div class="ifv gr">${fmt(x.pa)} د.ع</div></div>
         <div><div class="ifl">${x.st==='late'?'<span style="color:var(--rd)">آخر قسط متأخر</span>':'القسط القادم'}</div><div class="ifv ${x.st==='late'?'rd':'am'}">${nd?fD(nd.dueDate):'—'}</div></div>
@@ -733,12 +775,12 @@ window.viewSale=function(id){
   oM('viewM');
 };
 
-// ADD/EDIT SALE
 let _eid=null;
 window.openAddSale=function(){
   _eid=null;
   document.getElementById('smtt').textContent='📦 قسط جديد';
   ['sItem','sTotal','sDown','sCount','sNotes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  if(document.getElementById('sInterest'))document.getElementById('sInterest').value='0';
   document.getElementById('sFirst').value=addM(tod(),1);
   document.getElementById('sCat').value='ثلاجة';
   document.getElementById('calcB').style.display='none';
@@ -753,7 +795,8 @@ window.editSale=function(id){
   sel.innerHTML='<option value="">-- اختر زبوناً --</option>'+c.map(x=>`<option value="${x.id}" ${x.id===sl.customerId?'selected':''}>${x.name}</option>`).join('');
   document.getElementById('sItem').value=sl.itemName||'';
   document.getElementById('sCat').value=sl.category||'أخرى';
-  document.getElementById('sTotal').value=sl.totalAmount||'';
+  document.getElementById('sTotal').value=sl.basePrice||sl.totalAmount||'';
+  if(document.getElementById('sInterest'))document.getElementById('sInterest').value=sl.interestRate||0;
   document.getElementById('sDown').value=sl.downPayment||'';
   document.getElementById('sCount').value=sl.installmentCount||'';
   document.getElementById('sFirst').value=sl.firstDate||'';
@@ -762,29 +805,38 @@ window.editSale=function(id){
 };
 window.calcS=function(){
   const t=Number(document.getElementById('sTotal').value||0);
+  const intr=Number(document.getElementById('sInterest')?.value||0);
   const d=Number(document.getElementById('sDown').value||0);
   const n=Number(document.getElementById('sCount').value||0);
   const b=document.getElementById('calcB');
   if(!t||!n){b.style.display='none';return;}
-  const r=t-d;const per=Math.ceil(r/n);
+  const intAmt=Math.round(t*intr/100);
+  const totalWithInt=t+intAmt;
+  const r=totalWithInt-d;
+  const per=Math.ceil(r/n);
   b.style.display='block';
+  if(document.getElementById('c0'))document.getElementById('c0').textContent=fmt(t)+' د.ع';
+  if(document.getElementById('cInt'))document.getElementById('cInt').textContent=fmt(intAmt)+' د.ع ('+intr+'%)';
+  if(document.getElementById('cTot'))document.getElementById('cTot').textContent=fmt(totalWithInt)+' د.ع';
   document.getElementById('c1').textContent=fmt(r)+' د.ع';
   document.getElementById('c2').textContent=fmt(per)+' د.ع';
-  document.getElementById('c3').textContent=fmt(per*n)+' د.ع';
 };
 window.saveSale=async function(){
   const cid=document.getElementById('sCust').value;
   const item=document.getElementById('sItem').value.trim();
-  const tot=Number(document.getElementById('sTotal').value);
+  const basePrice=Number(document.getElementById('sTotal').value);
+  const intr=Number(document.getElementById('sInterest')?.value||0);
   const dn=Number(document.getElementById('sDown').value||0);
   const cnt=Number(document.getElementById('sCount').value);
   const fd=document.getElementById('sFirst').value;
   const cat=document.getElementById('sCat').value;
   const notes=document.getElementById('sNotes').value;
-  if(!cid||!item||!tot||!cnt||!fd){toast('يرجى ملء الحقول المطلوبة','e');return;}
-  const per=Math.ceil((tot-dn)/cnt);
+  if(!cid||!item||!basePrice||!cnt||!fd){toast('يرجى ملء الحقول المطلوبة','e');return;}
+  const intAmt=Math.round(basePrice*intr/100);
+  const totalWithInt=basePrice+intAmt;
+  const per=Math.ceil((totalWithInt-dn)/cnt);
   const id=_eid||uid();
-  const sl={id,customerId:cid,itemName:item,category:cat,totalAmount:tot,downPayment:dn,installmentCount:cnt,installmentAmount:per,firstDate:fd,notes,createdAt:new Date().toISOString()};
+  const sl={id,customerId:cid,itemName:item,category:cat,basePrice,interestRate:intr,interestAmount:intAmt,totalAmount:totalWithInt,downPayment:dn,installmentCount:cnt,installmentAmount:per,firstDate:fd,notes,createdAt:new Date().toISOString()};
   try{
     await window._save('sales',sl);
     if(!_eid){for(let k=0;k<cnt;k++){await window._save('installments',{id:uid(),saleId:id,num:k+1,amount:per,dueDate:addM(fd,k),status:'pending',createdAt:new Date().toISOString()});}}
@@ -798,7 +850,125 @@ window.delSale=async function(id){
   await window._del('sales',id);toast('تم الحذف','i');
 };
 
-// PAYMENTS TAB
+// ── DUE THIS MONTH MODAL ──
+window.showDueModal=function(){
+  const{i,s,c}=D();const now=new Date();const m=now.getMonth(),y=now.getFullYear();
+  const list=i.filter(x=>{const d=new Date(x.dueDate||'');return d.getMonth()===m&&d.getFullYear()===y&&x.status!=='paid';})
+    .sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate));
+  const total=list.reduce((a,x)=>a+Number(x.amount||0),0);
+  document.getElementById('dueMSub').textContent=`${list.length} دفعة • إجمالي: ${fmt(total)} د.ع`;
+  document.getElementById('dueMBody').innerHTML=list.length?list.map(x=>{
+    const sl=s.find(z=>z.id===x.saleId)||{};const cu=c.find(z=>z.id===sl.customerId)||{};
+    const isLate2=isL(x.dueDate);
+    return`<div class="di ${isLate2?'u':'s'}" style="margin-bottom:8px">
+      <div class="av" style="${isLate2?'background:linear-gradient(135deg,#ef4444,#f97316)':''}">${ini(cu.name)}</div>
+      <div class="din">
+        <div class="dn" style="color:#000;font-weight:900">${cu.name||'—'} ${cu.phone?`<span style="color:#000;font-weight:700;font-size:12px">• ${cu.phone}</span>`:''}</div>
+        <div class="dm">📦 ${sl.itemName||'—'} • قسط ${x.num} • ${fD(x.dueDate)} ${isLate2?'<span style="color:var(--rd)">⚠️ متأخر</span>':''}</div>
+      </div>
+      <div>
+        <div class="da">${fmt(x.amount)} د.ع</div>
+        <button class="btn bgr bsm" style="margin-top:4px" onclick="opPayI('${x.id}');cM('dueM')">💳 دفع</button>
+      </div>
+    </div>`;
+  }).join(''):'<div class="empty"><div class="ei">✨</div><p>لا توجد دفعات مستحقة هذا الشهر</p></div>';
+  oM('dueM');
+};
+
+// ── LATE MODAL ──
+window.showLateModal=function(){
+  const{i,s,c}=D();
+  // Group by customer
+  const lateInst=i.filter(x=>x.status!=='paid'&&isL(x.dueDate)).sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate));
+  // Group by saleId then by customer
+  const byCustomer={};
+  lateInst.forEach(x=>{
+    const sl=s.find(z=>z.id===x.saleId)||{};const cu=c.find(z=>z.id===sl.customerId)||{};
+    const key=cu.id||'unknown';
+    if(!byCustomer[key])byCustomer[key]={cu,items:[]};
+    byCustomer[key].items.push({...x,itemName:sl.itemName});
+  });
+  const groups=Object.values(byCustomer);
+  document.getElementById('lateMSub').textContent=`${lateInst.length} دفعة متأخرة • ${groups.length} زبون`;
+  document.getElementById('lateMBody').innerHTML=groups.length?groups.map(g=>{
+    const total=g.items.reduce((a,x)=>a+Number(x.amount||0),0);
+    return`<div class="ic late" style="margin-bottom:10px">
+      <div class="ich" style="margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:9px">
+          <div class="av" style="background:linear-gradient(135deg,#ef4444,#f97316)">${ini(g.cu.name)}</div>
+          <div>
+            <div style="font-size:15px;font-weight:900;color:#000">${g.cu.name||'—'}</div>
+            <div style="font-size:12px;color:#000;font-weight:700">${g.cu.phone||''}</div>
+          </div>
+        </div>
+        <div style="text-align:left">
+          <div style="font-size:11px;color:var(--t4)">${g.items.length} قسط متأخر</div>
+          <div style="font-size:14px;font-weight:800;color:var(--rd)">${fmt(total)} د.ع</div>
+        </div>
+      </div>
+      ${g.items.map(x=>{
+        const dy=Math.floor((new Date()-new Date(x.dueDate))/864e5);
+        return`<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:rgba(239,68,68,.06);border-radius:9px;margin-bottom:5px;gap:8px">
+          <div>
+            <div style="font-size:13px;font-weight:700">📦 ${x.itemName||'—'} — قسط ${x.num}</div>
+            <div style="font-size:11px;color:var(--rd)">${fD(x.dueDate)} • متأخر ${dy} يوم</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+            <span style="font-size:13px;font-weight:800;color:var(--rd)">${fmt(x.amount)} د.ع</span>
+            <button class="btn bgr bsm" onclick="opPayI('${x.id}');cM('lateM')">💳 دفع</button>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join(''):'<div class="empty"><div class="ei">✨</div><p>لا توجد دفعات متأخرة</p></div>';
+  oM('lateM');
+};
+
+// ── ALL CUSTOMERS MODAL ──
+window.showAllCustsModal=function(){
+  const{c}=D();
+  document.getElementById('allCustsSub').textContent=`${c.length} زبون`;
+  document.getElementById('allCustsSearch').value='';
+  renderAllCusts(c);
+  oM('allCustsM');
+};
+
+function renderAllCusts(list){
+  const{s,i}=D();
+  document.getElementById('allCustsBody').innerHTML=list.length?list.map(x=>{
+    const cs=s.filter(z=>z.customerId===x.id);
+    const db=cs.reduce((a,z)=>{const ins=i.filter(q=>q.saleId===z.id&&q.status!=='paid');return a+ins.reduce((b,q)=>b+Number(q.amount||0),0);},0);
+    const hasLate=cs.some(z=>i.some(q=>q.saleId===z.id&&q.status!=='paid'&&isL(q.dueDate)));
+    return`<div class="di${hasLate?' u':''}" style="margin-bottom:8px;cursor:pointer" onclick="goToCustSales('${x.id}')">
+      <div class="av" style="${hasLate?'background:linear-gradient(135deg,#ef4444,#f97316)':''}">${ini(x.name)}</div>
+      <div class="din">
+        <div class="dn" style="color:#000;font-weight:900">${x.name}</div>
+        <div class="dm" style="color:#000;font-weight:600">${x.phone||''} ${cs.length?`• ${cs.length} أقساط`:''}</div>
+      </div>
+      <div style="text-align:left">
+        ${db>0?`<div style="font-size:12px;font-weight:800;color:var(--am)">${fmt(db)} د.ع</div>`:'<div style="font-size:11px;color:var(--gr)">✅ مسدد</div>'}
+        ${hasLate?'<div style="font-size:11px;color:var(--rd);font-weight:700">⚠️ متأخر</div>':''}
+      </div>
+    </div>`;
+  }).join(''):'<div class="empty"><p>لا يوجد زبائن</p></div>';
+}
+
+window.filterAllCusts=function(v){
+  const{c}=D();
+  renderAllCusts(v?c.filter(x=>(x.name||'').includes(v)||(x.phone||'').includes(v)):c);
+};
+
+window.goToCustSales=function(custId){
+  cM('allCustsM');
+  sw('sales',null,document.querySelectorAll('.nb')[1]);
+  document.querySelectorAll('.tab')[1]?.classList.add('on');
+  setTimeout(()=>{
+    const{c}=D();const cu=c.find(x=>x.id===custId)||{};
+    const inp=document.getElementById('ss');
+    if(inp){inp.value=cu.name||'';rSales(cu.name||'');}
+  },100);
+};
+
 window.rPays=function(srch=''){
   const{i,p,s,c}=D();
   let list=i.map(x=>{const sl=s.find(z=>z.id===x.saleId)||{};const cu=c.find(z=>z.id===sl.customerId)||{};const pm=p.find(z=>z.installmentId===x.id);const st=x.status==='paid'?'paid':isL(x.dueDate)?'late':'pending';return{...x,in:sl.itemName,cn:cu.name,cp:cu.phone,pm,st};});
@@ -874,6 +1044,10 @@ window.editCust=function(id){const{c}=D();const cu=c.find(x=>x.id===id);if(!cu)r
 window.saveCust=async function(){
   const name=document.getElementById('cNm').value.trim();const phone=document.getElementById('cPh').value.trim();
   if(!name||!phone){toast('الاسم والهاتف مطلوبان','e');return;}
+  // منع التكرار
+  const{c}=D();
+  const dup=c.find(x=>x.id!==_ecid&&x.name.trim().toLowerCase()===name.toLowerCase());
+  if(dup){toast(`⚠️ يوجد زبون بنفس الاسم: "${dup.name}" — رقمه: ${dup.phone}`,'e');return;}
   const id=_ecid||uid();
   const cu={id,name,phone,phone2:document.getElementById('cPh2').value,address:document.getElementById('cAd').value,idNum:document.getElementById('cId').value,notes:document.getElementById('cNo').value,createdAt:new Date().toISOString()};
   try{await window._save('customers',cu);cM('custM');toast('تم الحفظ','s');
@@ -944,24 +1118,57 @@ const sQ=q=>{localStorage.setItem(QK,JSON.stringify(q));updPB(q.length);};
 const enq=op=>{const q=gQ();q.push({...op,qid:uid(),at:new Date().toISOString()});sQ(q);};
 function updPB(n){const b=document.getElementById('pb'),c=document.getElementById('pc');if(!b||!c)return;if(n>0){b.classList.add('on');c.textContent=n;}else b.classList.remove('on');}
 
-const _os=window._fbs;const _od=window._fbd;
+// _save/_del: write to IDB immediately, also try Firebase directly; if offline enqueue
 window._save=async function(store,data){
-  if(!navigator.onLine){await window._ip(store,data);enq({t:'s',store,data});window._ref();return;}
-  try{await _os(store,data);}catch{await window._ip(store,data);enq({t:'s',store,data});window._ref();}
+  // Always write to IDB first (for instant UI)
+  await window._ip(store,data);
+  if(!navigator.onLine){
+    enq({t:'s',store,data});
+    if(window._ref)window._ref();
+    return;
+  }
+  try{
+    await window._fbs(store,data);
+    // success — remove from queue if it was there
+    const q=gQ();const nq=q.filter(x=>!(x.t==='s'&&x.store===store&&x.data?.id===data.id));if(nq.length!==q.length)sQ(nq);
+  }catch(e){
+    console.warn('[_save Firebase failed, queuing]',store,e.message);
+    enq({t:'s',store,data});
+  }
+  if(window._ref)window._ref();
 };
+
 window._del=async function(store,id){
-  if(!navigator.onLine){await window._id(store,id);enq({t:'d',store,id});window._ref();return;}
-  try{await _od(store,id);}catch{await window._id(store,id);enq({t:'d',store,id});window._ref();}
+  await window._id(store,id);
+  if(!navigator.onLine){
+    enq({t:'d',store,id});
+    if(window._ref)window._ref();
+    return;
+  }
+  try{
+    await window._fbd(store,id);
+  }catch(e){
+    console.warn('[_del Firebase failed, queuing]',store,e.message);
+    enq({t:'d',store,id});
+  }
+  if(window._ref)window._ref();
 };
 
 async function procQ(){
   const q=gQ();if(!q.length||!navigator.onLine)return;
   document.getElementById('sb')?.classList.add('show');
   const ok=[];
-  for(const op of q){try{if(op.t==='s')await _os(op.store,op.data);else await _od(op.store,op.id);ok.push(op.qid);}catch{}}
+  for(const op of q){
+    try{
+      if(op.t==='s')await window._fbs(op.store,op.data);
+      else if(op.t==='d')await window._fbd(op.store,op.id);
+      ok.push(op.qid);
+    }catch(e){console.warn('[procQ] failed op:',op.store,e.message);}
+  }
   sQ(q.filter(x=>!ok.includes(x.qid)));
   setTimeout(()=>document.getElementById('sb')?.classList.remove('show'),1500);
   if(ok.length)toast(`تمت مزامنة ${ok.length} عملية ✅`,'s');
+  if(q.length-ok.length>0)toast(`${q.length-ok.length} عملية لم تزامن، ستُعاد المحاولة`,'w');
 }
 
 window.addEventListener('online',()=>{document.getElementById('ob')?.classList.remove('show');toast('عاد الاتصال — جارٍ المزامنة...','i');setTimeout(procQ,800);});
