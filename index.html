@@ -1288,13 +1288,6 @@ document.addEventListener('DOMContentLoaded',()=>{
     if((e.ctrlKey||e.metaKey)&&e.shiftKey&&['i','j','c','k'].includes(k)){e.preventDefault();return false;}
     if((e.ctrlKey||e.metaKey)&&k==='u'){e.preventDefault();return false;}
   });
-  // كشف DevTools (طريقة الحجم)
-  const threshold=160;
-  setInterval(()=>{
-    if(window.outerWidth-window.innerWidth>threshold||window.outerHeight-window.innerHeight>threshold){
-      document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:Tajawal,sans-serif;font-size:22px;font-weight:900;color:#1a6fd4;background:#f0f7ff;flex-direction:column;gap:14px"><div style="font-size:52px">🔒</div><div>هذا البرنامج محمي</div></div>';
-    }
-  },1000);
   // منع تحديد النص
   document.addEventListener('selectstart',e=>{
     if(!['INPUT','TEXTAREA'].includes(e.target.tagName))e.preventDefault();
