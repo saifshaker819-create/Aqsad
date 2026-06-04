@@ -373,9 +373,10 @@ textarea.fc{height:auto;padding:11px 13px;resize:vertical;min-height:68px;}
   <div class="sts">
     <div class="sc" style="cursor:pointer" onclick="sw('sales',null,document.querySelectorAll('.nb')[1])"><div class="si b">📋</div><div><div class="sl">إجمالي الأقساط</div><div class="sv" id="s1">0</div></div></div>
     <div class="sc"><div class="si g">✅</div><div><div class="sl">محصّل هذا الشهر</div><div class="sv" id="s2">0</div><div class="ss">د.ع</div></div></div>
-    <div class="sc" style="cursor:pointer;transition:box-shadow .2s" onclick="showDueModal()" id="sc3"><div class="si a">⏰</div><div><div class="sl">مستحق الشهر</div><div class="sv" id="s3">0</div><div class="ss">د.ع — اضغط للتفاصيل</div></div></div>
-    <div class="sc" style="cursor:pointer;transition:box-shadow .2s" onclick="showLateModal()" id="sc4"><div class="si r">⚠️</div><div><div class="sl">دفعات متأخرة</div><div class="sv" id="s4">0</div><div class="ss">اضغط للتفاصيل</div></div></div>
-    <div class="sc"><div class="si p">💰</div><div><div class="sl">إجمالي القيمة</div><div class="sv" id="s5">0</div><div class="ss">د.ع</div></div></div>
+    <div class="sc" style="cursor:pointer" onclick="showDueModal()" id="sc3"><div class="si a">⏰</div><div><div class="sl">مستحق الشهر</div><div class="sv" id="s3">0</div><div class="ss">اضغط للتفاصيل</div></div></div>
+    <div class="sc" style="cursor:pointer" onclick="showLateModal()" id="sc4"><div class="si r">⚠️</div><div><div class="sl">دفعات متأخرة</div><div class="sv" id="s4">0</div><div class="ss">اضغط للتفاصيل</div></div></div>
+    <div class="sc"><div class="si p">💰</div><div><div class="sl">إجمالي المبيعات مع الفائدة</div><div class="sv" id="s5">0</div><div class="ss">د.ع</div></div></div>
+    <div class="sc"><div class="si" style="background:rgba(245,158,11,.13)">🏦</div><div><div class="sl">إجمالي الفوائد المحصّلة</div><div class="sv" id="s7" style="color:var(--am)">0</div><div class="ss">د.ع</div></div></div>
     <div class="sc" style="cursor:pointer" onclick="showAllCustsModal()"><div class="si s">👥</div><div><div class="sl">الزبائن</div><div class="sv" id="s6">0</div><div class="ss">اضغط للعرض</div></div></div>
   </div>
 
@@ -461,10 +462,22 @@ textarea.fc{height:auto;padding:11px 13px;resize:vertical;min-height:68px;}
         </div>
       </div>
       <div class="fg2">
-        <div class="fg"><label class="fl">السعر الأصلي (د.ع) *</label><input type="number" class="fc" id="sTotal" placeholder="0" oninput="calcS()" required></div>
-        <div class="fg"><label class="fl">نسبة الفائدة %</label><input type="number" class="fc" id="sInterest" placeholder="0" min="0" step="0.1" oninput="calcS()" value="0"></div>
-        <div class="fg"><label class="fl">الدفعة المقدمة (د.ع)</label><input type="number" class="fc" id="sDown" placeholder="0" oninput="calcS()"></div>
-        <div class="fg"><label class="fl">عدد الأقساط *</label><input type="number" class="fc" id="sCount" placeholder="12" min="1" max="120" oninput="calcS()" required></div>
+        <div class="fg">
+          <label class="fl">السعر الأصلي (د.ع) *</label>
+          <input type="text" inputmode="numeric" class="fc" id="sTotal" placeholder="٠" oninput="fmtInput(this)" required>
+        </div>
+        <div class="fg">
+          <label class="fl">نسبة الفائدة %</label>
+          <input type="number" class="fc" id="sInterest" placeholder="0" min="0" step="0.1" oninput="calcS()" value="0">
+        </div>
+        <div class="fg">
+          <label class="fl">الدفعة المقدمة (د.ع)</label>
+          <input type="text" inputmode="numeric" class="fc" id="sDown" placeholder="٠" oninput="fmtInput(this)">
+        </div>
+        <div class="fg">
+          <label class="fl">عدد الأقساط *</label>
+          <input type="number" class="fc" id="sCount" placeholder="12" min="1" max="120" oninput="calcS()" required>
+        </div>
         <div class="fg"><label class="fl">تاريخ أول قسط *</label><input type="date" class="fc" id="sFirst" required></div>
       </div>
       <div class="cb" id="calcB" style="display:none">
@@ -678,12 +691,24 @@ function rStats(){
   let due=0;i.filter(x=>{const d=new Date(x.dueDate||'');return d.getMonth()===m&&d.getFullYear()===y&&x.status!=='paid';}).forEach(x=>due+=Number(x.amount||0));
   const late=i.filter(x=>x.status!=='paid'&&isL(x.dueDate)).length;
   const tv=s.reduce((a,x)=>a+Number(x.totalAmount||0),0);
+  // حساب الفوائد المحصّلة: لكل دفعة مدفوعة، احسب نصيب الفائدة
+  let collectedInterest=0;
+  p.forEach(pay=>{
+    const inst=i.find(x=>x.id===pay.installmentId);
+    if(!inst)return;
+    const sl=s.find(x=>x.id===inst.saleId);
+    if(!sl||!sl.interestRate||sl.interestRate<=0)return;
+    // نصيب الفائدة في كل قسط = (مبلغ الفائدة الكلي / عدد الأقساط)
+    const intPerInst=Math.round((sl.interestAmount||0)/sl.installmentCount);
+    collectedInterest+=intPerInst;
+  });
   document.getElementById('s1').textContent=s.length;
   document.getElementById('s2').textContent=fmt(col);
   document.getElementById('s3').textContent=fmt(due);
   document.getElementById('s4').textContent=late;
   document.getElementById('s5').textContent=fmt(tv);
   document.getElementById('s6').textContent=c.length;
+  const s7=document.getElementById('s7');if(s7)s7.textContent=fmt(collectedInterest);
 }
 
 // OVERVIEW
@@ -802,7 +827,10 @@ let _eid=null;
 window.openAddSale=function(){
   _eid=null;
   document.getElementById('smtt').textContent='📦 قسط جديد';
-  ['sItem','sTotal','sDown','sCount','sNotes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['sItem','sNotes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('sTotal').value='';
+  document.getElementById('sDown').value='';
+  document.getElementById('sCount').value='';
   if(document.getElementById('sInterest'))document.getElementById('sInterest').value='0';
   document.getElementById('sFirst').value=addM(tod(),1);
   document.getElementById('sCat').value='ثلاجة';
@@ -818,18 +846,36 @@ window.editSale=function(id){
   sel.innerHTML='<option value="">-- اختر زبوناً --</option>'+c.map(x=>`<option value="${x.id}" ${x.id===sl.customerId?'selected':''}>${x.name}</option>`).join('');
   document.getElementById('sItem').value=sl.itemName||'';
   document.getElementById('sCat').value=sl.category||'أخرى';
-  document.getElementById('sTotal').value=sl.basePrice||sl.totalAmount||'';
+  const bp=sl.basePrice||sl.totalAmount||0;
+  document.getElementById('sTotal').value=bp?toAr(bp.toLocaleString('ar-IQ')):'';
   if(document.getElementById('sInterest'))document.getElementById('sInterest').value=sl.interestRate||0;
-  document.getElementById('sDown').value=sl.downPayment||'';
+  const dp=sl.downPayment||0;
+  document.getElementById('sDown').value=dp?toAr(dp.toLocaleString('ar-IQ')):'';
   document.getElementById('sCount').value=sl.installmentCount||'';
   document.getElementById('sFirst').value=sl.firstDate||'';
   document.getElementById('sNotes').value=sl.notes||'';
   calcS();oM('saleM');
 };
+// ── تنسيق المبالغ بالأرقام العربية مع الفواصل ──
+const arNums={'0':'٠','1':'١','2':'٢','3':'٣','4':'٤','5':'٥','6':'٦','7':'٧','8':'٨','9':'٩'};
+function toAr(n){return String(n).replace(/[0-9]/g,d=>arNums[d]);}
+function fromAr(s){return Number(String(s).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/,/g,'').replace(/[^0-9.]/g,''))||0;}
+window.fmtInput=function(el){
+  const raw=fromAr(el.value);
+  if(!raw&&el.value){el.value='';calcS();return;}
+  if(raw){
+    const pos=el.selectionStart;
+    el.value=toAr(raw.toLocaleString('ar-IQ'));
+    try{el.setSelectionRange(el.value.length,el.value.length);}catch{}
+  }
+  calcS();
+};
+function getRaw(id){return fromAr(document.getElementById(id)?.value||'0');}
+
 window.calcS=function(){
-  const t=Number(document.getElementById('sTotal').value||0);
+  const t=getRaw('sTotal');
   const intr=Number(document.getElementById('sInterest')?.value||0);
-  const d=Number(document.getElementById('sDown').value||0);
+  const d=getRaw('sDown');
   const n=Number(document.getElementById('sCount').value||0);
   const b=document.getElementById('calcB');
   if(!t||!n){b.style.display='none';return;}
@@ -838,18 +884,18 @@ window.calcS=function(){
   const r=totalWithInt-d;
   const per=Math.ceil(r/n);
   b.style.display='block';
-  if(document.getElementById('c0'))document.getElementById('c0').textContent=fmt(t)+' د.ع';
-  if(document.getElementById('cInt'))document.getElementById('cInt').textContent=fmt(intAmt)+' د.ع ('+intr+'%)';
-  if(document.getElementById('cTot'))document.getElementById('cTot').textContent=fmt(totalWithInt)+' د.ع';
-  document.getElementById('c1').textContent=fmt(r)+' د.ع';
-  document.getElementById('c2').textContent=fmt(per)+' د.ع';
+  if(document.getElementById('c0'))document.getElementById('c0').textContent=toAr(t.toLocaleString('ar-IQ'))+' د.ع';
+  if(document.getElementById('cInt'))document.getElementById('cInt').textContent=toAr(intAmt.toLocaleString('ar-IQ'))+' د.ع ('+intr+'%)';
+  if(document.getElementById('cTot'))document.getElementById('cTot').textContent=toAr(totalWithInt.toLocaleString('ar-IQ'))+' د.ع';
+  document.getElementById('c1').textContent=toAr(r.toLocaleString('ar-IQ'))+' د.ع';
+  document.getElementById('c2').textContent=toAr(per.toLocaleString('ar-IQ'))+' د.ع';
 };
 window.saveSale=async function(){
   const cid=document.getElementById('sCust').value;
   const item=document.getElementById('sItem').value.trim();
-  const basePrice=Number(document.getElementById('sTotal').value);
+  const basePrice=getRaw('sTotal');
   const intr=Number(document.getElementById('sInterest')?.value||0);
-  const dn=Number(document.getElementById('sDown').value||0);
+  const dn=getRaw('sDown');
   const cnt=Number(document.getElementById('sCount').value);
   const fd=document.getElementById('sFirst').value;
   const cat=document.getElementById('sCat').value;
@@ -860,17 +906,16 @@ window.saveSale=async function(){
   const per=Math.ceil((totalWithInt-dn)/cnt);
   const id=_eid||uid();
   const sl={id,customerId:cid,itemName:item,category:cat,basePrice,interestRate:intr,interestAmount:intAmt,totalAmount:totalWithInt,downPayment:dn,installmentCount:cnt,installmentAmount:per,firstDate:fd,notes,createdAt:new Date().toISOString()};
-  try{
-    await window._save('sales',sl);
-    if(!_eid){for(let k=0;k<cnt;k++){await window._save('installments',{id:uid(),saleId:id,num:k+1,amount:per,dueDate:addM(fd,k),status:'pending',createdAt:new Date().toISOString()});}}
-    cM('saleM');toast('تم الحفظ ✅','s');
-  }catch(e){toast('خطأ: '+e.message,'e');}
+  cM('saleM');toast('تم الحفظ ✅','s');
+  window._save('sales',sl);
+  if(!_eid){for(let k=0;k<cnt;k++)window._save('installments',{id:uid(),saleId:id,num:k+1,amount:per,dueDate:addM(fd,k),status:'pending',createdAt:new Date().toISOString()});}
 };
 window.delSale=async function(id){
   if(!confirm('حذف هذا القسط وجميع بياناته؟'))return;
+  toast('تم الحذف','i');
   const{i,p}=D();const inst=i.filter(x=>x.saleId===id);
-  for(const x of inst){const pm=p.find(z=>z.installmentId===x.id);if(pm)await window._del('payments',pm.id);await window._del('installments',x.id);}
-  await window._del('sales',id);toast('تم الحذف','i');
+  inst.forEach(x=>{const pm=p.find(z=>z.installmentId===x.id);if(pm)window._del('payments',pm.id);window._del('installments',x.id);});
+  window._del('sales',id);
 };
 
 // ── DUE THIS MONTH MODAL ──
@@ -1067,17 +1112,16 @@ window.editCust=function(id){const{c}=D();const cu=c.find(x=>x.id===id);if(!cu)r
 window.saveCust=async function(){
   const name=document.getElementById('cNm').value.trim();const phone=document.getElementById('cPh').value.trim();
   if(!name||!phone){toast('الاسم والهاتف مطلوبان','e');return;}
-  // منع التكرار
   const{c}=D();
   const dup=c.find(x=>x.id!==_ecid&&x.name.trim().toLowerCase()===name.toLowerCase());
   if(dup){toast(`⚠️ يوجد زبون بنفس الاسم: "${dup.name}" — رقمه: ${dup.phone}`,'e');return;}
   const id=_ecid||uid();
   const cu={id,name,phone,phone2:document.getElementById('cPh2').value,address:document.getElementById('cAd').value,idNum:document.getElementById('cId').value,notes:document.getElementById('cNo').value,createdAt:new Date().toISOString()};
-  try{await window._save('customers',cu);cM('custM');toast('تم الحفظ','s');
-    if(_retSale){setTimeout(()=>{openAddSale();setTimeout(()=>{document.getElementById('sCust').value=id;},200);},300);}
-  }catch(e){toast('خطأ: '+e.message,'e');}
+  cM('custM');toast('تم الحفظ','s');
+  window._save('customers',cu);
+  if(_retSale){setTimeout(()=>{openAddSale();setTimeout(()=>{document.getElementById('sCust').value=id;},150);},250);}
 };
-window.delCust=async function(id){if(!confirm('حذف الزبون؟'))return;await window._del('customers',id);toast('تم الحذف','i');};
+window.delCust=function(id){if(!confirm('حذف الزبون؟'))return;toast('تم الحذف','i');window._del('customers',id);};
 window.opSaleForC=function(id){openAddSale();setTimeout(()=>{document.getElementById('sCust').value=id;},200);};
 
 // PAY MODAL
@@ -1104,13 +1148,16 @@ window.savePay=async function(){
   const amt=Number(document.getElementById('pAmt').value);const pd=document.getElementById('pDate').value;
   const met=document.getElementById('pMet').value;const ref=document.getElementById('pRef').value;const no=document.getElementById('pNo').value;
   if(!sid||!iid||!amt||!pd){toast('يرجى ملء الحقول المطلوبة','e');return;}
-  const{i}=D();const inst=i.find(x=>x.id===iid);if(!inst)return;
+  const{i,s}=D();const inst=i.find(x=>x.id===iid);if(!inst)return;
+  // حساب فائدة هذا القسط
+  const sl=s.find(x=>x.id===sid)||{};
+  const intPerInst=sl.interestRate>0?Math.round((sl.interestAmount||0)/(sl.installmentCount||1)):0;
   const pyid=uid();
-  try{
-    await window._save('payments',{id:pyid,saleId:sid,installmentId:iid,amount:amt,paidDate:pd,method:met,ref,notes:no,createdAt:new Date().toISOString()});
-    await window._save('installments',{...inst,status:'paid'});
-    cM('payM');toast('تم تسجيل الدفعة ✅','s');
-  }catch(e){toast('خطأ: '+e.message,'e');}
+  // إغلاق المودال فوراً
+  cM('payM');toast('تم تسجيل الدفعة ✅','s');
+  // حفظ في الخلفية
+  window._save('payments',{id:pyid,saleId:sid,installmentId:iid,amount:amt,interestAmount:intPerInst,paidDate:pd,method:met,ref,notes:no,createdAt:new Date().toISOString()});
+  window._save('installments',{...inst,status:'paid'});
 };
 
 // MODAL
@@ -1146,33 +1193,51 @@ function isFbPermError(e){
   return m.includes('permission')||m.includes('PERMISSION_DENIED')||m.includes('Missing or insufficient');
 }
 
+// ── تحديث الـ Cache المحلي فوراً (بدون انتظار IDB أو Firebase) ──
+function updateLocalCache(store,data,isDelete=false){
+  if(!window._d)return;
+  const arr=window._d[{customers:'c',sales:'s',installments:'i',payments:'p'}[store]];
+  if(!arr)return;
+  if(isDelete){
+    const idx=arr.findIndex(x=>x.id===data);
+    if(idx>-1)arr.splice(idx,1);
+  }else{
+    const idx=arr.findIndex(x=>x.id===data.id);
+    if(idx>-1)arr[idx]=data;else arr.push(data);
+  }
+}
+
 window._save=async function(store,data){
-  await window._ip(store,data);
-  if(!navigator.onLine){enq({t:'s',store,data});scheduleRef();return;}
+  // ١ — تحديث الواجهة فوراً
+  updateLocalCache(store,data);
+  rStats();rOv();rSales();rCusts();
+  // ٢ — حفظ IDB في الخلفية
+  window._ip(store,data);
+  // ٣ — حفظ Firebase
+  if(!navigator.onLine){enq({t:'s',store,data});return;}
   try{
     await window._fbs(store,data);
     const q=gQ();const nq=q.filter(x=>!(x.t==='s'&&x.store===store&&x.data?.id===data.id));if(nq.length!==q.length)sQ(nq);
   }catch(e){
-    if(isFbPermError(e)){
-      window._fbBlocked=true;
-      showFbRulesAlert();
-    }else{
-      enq({t:'s',store,data});
-    }
+    if(isFbPermError(e)){window._fbBlocked=true;showFbRulesAlert();}
+    else enq({t:'s',store,data});
   }
-  scheduleRef();
 };
 
 window._del=async function(store,id){
-  await window._id(store,id);
-  if(!navigator.onLine){enq({t:'d',store,id});scheduleRef();return;}
+  // ١ — تحديث الواجهة فوراً
+  updateLocalCache(store,id,true);
+  rStats();rOv();rSales();rCusts();
+  // ٢ — حذف IDB في الخلفية
+  window._id(store,id);
+  // ٣ — حذف Firebase
+  if(!navigator.onLine){enq({t:'d',store,id});return;}
   try{
     await window._fbd(store,id);
   }catch(e){
     if(isFbPermError(e)){window._fbBlocked=true;showFbRulesAlert();}
     else enq({t:'d',store,id});
   }
-  scheduleRef();
 };
 
 // إظهار تنبيه قواعد Firebase مرة واحدة فقط
