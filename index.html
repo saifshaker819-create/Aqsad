@@ -332,9 +332,42 @@ textarea.fc{height:auto;padding:11px 13px;resize:vertical;min-height:68px;}
 
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-thumb{background:rgba(26,111,212,.2);border-radius:10px;}
+
+/* ── PRINT AREA (مخفي على الشاشة، يظهر عند الطباعة فقط) ── */
+#printArea{display:none;}
+@media print{
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:#fff!important;}
+  body>*{display:none!important;}
+  #printArea{
+    display:block!important;
+    font-family:'Tajawal',sans-serif;
+    direction:rtl;padding:14px 18px;width:100%;color:#0f172a;
+  }
+  .pr-head{text-align:center;padding-bottom:12px;border-bottom:2.5px solid #1a6fd4;margin-bottom:14px;}
+  .pr-logo{font-size:28px;margin-bottom:4px;}
+  .pr-title{font-size:20px;font-weight:900;color:#0f172a;}
+  .pr-sub{font-size:12px;color:#64748b;margin-top:2px;}
+  .pr-info{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:13px;}
+  .pr-box{border:1.5px solid #e2e8f0;border-radius:7px;padding:8px 10px;text-align:center;}
+  .pr-box-lbl{font-size:10px;color:#64748b;font-weight:600;}
+  .pr-box-val{font-size:15px;font-weight:900;color:#0f172a;margin-top:2px;}
+  .pr-tbl{width:100%;border-collapse:collapse;margin-top:4px;}
+  .pr-tbl th{background:#f1f5f9;padding:8px 10px;font-size:11px;font-weight:700;color:#475569;text-align:right;border:1px solid #cbd5e1;}
+  .pr-tbl td{padding:7px 10px;font-size:12px;border:1px solid #e2e8f0;vertical-align:middle;}
+  .pr-tbl .pr-paid td{background:#f0fdf4;}
+  .pr-tbl .pr-paid td:first-child{color:#16a34a;font-weight:700;}
+  .pr-tbl .pr-late td{background:#fff7f7;}
+  .pr-tbl .pr-late td:first-child{color:#dc2626;font-weight:700;}
+  .pr-tbl .pr-pending td:first-child{color:#64748b;}
+  .pr-footer{margin-top:13px;text-align:center;font-size:10px;color:#94a3b8;border-top:1px solid #e2e8f0;padding-top:9px;}
+}
 </style>
 </head>
 <body>
+
+<!-- PRINT AREA - يظهر عند الطباعة فقط -->
+<div id="printArea"></div>
 
 <div class="bar" id="ob"><div class="blink"></div>غير متصل — يعمل أوفلاين ويزامن عند الاتصال</div>
 <div class="bar" id="sb"><div class="spin" style="border-color:rgba(255,255,255,.3);border-top-color:#fff"></div>جارٍ المزامنة...</div>
@@ -505,7 +538,7 @@ textarea.fc{height:auto;padding:11px 13px;resize:vertical;min-height:68px;}
       <button class="mcl" onclick="cM('viewM')">✕</button>
     </div>
     <div class="mb" id="vmb"></div>
-    <div class="mf"><button class="btn bgh" onclick="cM('viewM')">إغلاق</button><button class="btn bpr" onclick="window.print()">🖨️ طباعة</button></div>
+    <div class="mf"><button class="btn bgh" onclick="cM('viewM')">إغلاق</button><button class="btn bpr" onclick="printSale()">🖨️ طباعة</button></div>
   </div>
 </div>
 
@@ -789,6 +822,10 @@ window.rSales=function(srch=''){
       <div class="ica">
         <button class="btn bgh bsm" onclick="viewSale('${x.id}')">👁️ تفاصيل</button>
         ${x.st!=='done'?`<button class="btn bgr bsm" onclick="opPayS('${x.id}')">💳 دفعة</button>`:''}
+        <button class="btn bsm" style="background:#25d366;color:#fff" onclick="sendWhatsApp('${x.id}')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          واتس
+        </button>
         <button class="btn bgh bsm" onclick="editSale('${x.id}')">✏️</button>
         <button class="btn brd bsm" onclick="delSale('${x.id}')">🗑️</button>
       </div>
@@ -798,6 +835,7 @@ window.rSales=function(srch=''){
 
 // VIEW SALE
 window.viewSale=function(id){
+  _printSaleId=id;
   const{s,c,i,p}=D();
   const sl=s.find(x=>x.id===id);if(!sl)return;
   const cu=c.find(x=>x.id===sl.customerId)||{};
@@ -823,7 +861,151 @@ window.viewSale=function(id){
   oM('viewM');
 };
 
-let _eid=null;
+// ── PRINT SALE ──
+let _printSaleId=null;
+window.printSale=function(){
+  if(!_printSaleId)return;
+  const{s,c,i,p}=D();
+  const sl=s.find(x=>x.id===_printSaleId);if(!sl)return;
+  const cu=c.find(x=>x.id===sl.customerId)||{};
+  const inst=i.filter(x=>x.saleId===_printSaleId).sort((a,b)=>a.num-b.num);
+  const pa=p.filter(x=>inst.find(z=>z.id===x.installmentId)).reduce((a,x)=>a+Number(x.amount||0),0);
+  const remaining=Number(sl.totalAmount)-pa;
+  const paidCount=inst.filter(x=>x.status==='paid').length;
+
+  const rows=inst.map(x=>{
+    const pm=p.find(z=>z.installmentId===x.id);
+    const st=x.status==='paid'?'pr-paid':isL(x.dueDate)?'pr-late':'pr-pending';
+    const stLbl=x.status==='paid'?'✅ مدفوع':isL(x.dueDate)?'⚠️ متأخر':'⏳ معلق';
+    return`<tr class="${st}">
+      <td style="text-align:center;font-weight:700">${x.num}</td>
+      <td>${fD(x.dueDate)}</td>
+      <td style="font-weight:800">${fmt(x.amount)} د.ع</td>
+      <td>${pm?fD(pm.paidDate):'—'}</td>
+      <td style="text-align:center">${stLbl}</td>
+    </tr>`;
+  }).join('');
+
+  const hasInt=sl.interestRate>0;
+  document.getElementById('printArea').innerHTML=`
+    <div class="pr-head">
+      <div class="pr-logo">📦</div>
+      <div class="pr-title">${sl.itemName} <span style="font-size:14px;color:#64748b">${sl.category||''}</span></div>
+      <div class="pr-sub">
+        👤 ${cu.name||'—'} ${cu.phone?`&nbsp;•&nbsp; 📞 ${cu.phone}`:''}
+        &nbsp;•&nbsp; تاريخ الطباعة: ${fD(tod())}
+      </div>
+    </div>
+    <div class="pr-info">
+      <div class="pr-box">
+        <div class="pr-box-lbl">السعر الأصلي</div>
+        <div class="pr-box-val">${fmt(sl.basePrice||sl.totalAmount)} د.ع</div>
+      </div>
+      ${hasInt?`<div class="pr-box">
+        <div class="pr-box-lbl">الفائدة (${sl.interestRate}%)</div>
+        <div class="pr-box-val" style="color:#f97316">+${fmt(sl.interestAmount)} د.ع</div>
+      </div>`:'<div class="pr-box"><div class="pr-box-lbl">الفائدة</div><div class="pr-box-val">لا يوجد</div></div>'}
+      <div class="pr-box">
+        <div class="pr-box-lbl">السعر الإجمالي</div>
+        <div class="pr-box-val" style="color:#1a6fd4">${fmt(sl.totalAmount)} د.ع</div>
+      </div>
+      <div class="pr-box">
+        <div class="pr-box-lbl">الدفعة المقدمة</div>
+        <div class="pr-box-val">${fmt(sl.downPayment||0)} د.ع</div>
+      </div>
+      <div class="pr-box">
+        <div class="pr-box-lbl">القسط الشهري</div>
+        <div class="pr-box-val" style="color:#1a6fd4">${fmt(sl.installmentAmount)} د.ع</div>
+      </div>
+      <div class="pr-box">
+        <div class="pr-box-lbl">المحصّل</div>
+        <div class="pr-box-val" style="color:#22c55e">${fmt(pa)} د.ع</div>
+      </div>
+      <div class="pr-box">
+        <div class="pr-box-lbl">المتبقي</div>
+        <div class="pr-box-val" style="color:#f59e0b">${fmt(remaining)} د.ع</div>
+      </div>
+      <div class="pr-box">
+        <div class="pr-box-lbl">مدفوع / الكلي</div>
+        <div class="pr-box-val">${paidCount} / ${inst.length} قسط</div>
+      </div>
+    </div>
+    <table class="pr-tbl">
+      <thead>
+        <tr>
+          <th style="text-align:center;width:40px">#</th>
+          <th>تاريخ الاستحقاق</th>
+          <th>المبلغ</th>
+          <th>تاريخ الدفع</th>
+          <th style="text-align:center">الحالة</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="pr-footer">
+      نظام الأقساط &nbsp;•&nbsp; ${cu.name||''} &nbsp;•&nbsp; ${sl.itemName} &nbsp;•&nbsp; ${fD(tod())}
+    </div>`;
+  window.print();
+};
+
+// ── WHATSAPP ──
+window.sendWhatsApp=function(saleId){
+  const{s,c,i,p}=D();
+  const sl=s.find(x=>x.id===saleId);if(!sl)return;
+  const cu=c.find(x=>x.id===sl.customerId)||{};
+  if(!cu.phone){toast('لا يوجد رقم هاتف لهذا الزبون','e');return;}
+
+  // تنسيق الرقم بصيغة +964
+  let phone=cu.phone.replace(/\D/g,'');
+  if(phone.startsWith('0'))phone=phone.slice(1);
+  if(!phone.startsWith('964'))phone='964'+phone;
+
+  const inst=i.filter(x=>x.saleId===saleId).sort((a,b)=>a.num-b.num);
+  const pa=p.filter(x=>inst.find(z=>z.id===x.installmentId)).reduce((a,x)=>a+Number(x.amount||0),0);
+  const paidCount=inst.filter(x=>x.status==='paid').length;
+  const remaining=Number(sl.totalAmount)-pa;
+  const nextDue=inst.filter(x=>x.status!=='paid').sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate))[0];
+  const lateList=inst.filter(x=>x.status!=='paid'&&isL(x.dueDate));
+
+  // بناء الرسالة
+  const line='─────────────────';
+  let msg=`📦 *تفاصيل الأقساط*\n${line}\n`;
+  msg+=`👤 *${cu.name}*\n`;
+  msg+=`🛒 المادة: *${sl.itemName}* ${sl.category?`(${sl.category})`:''}\n`;
+  msg+=`${line}\n`;
+  msg+=`💰 السعر الأصلي: *${fmt(sl.basePrice||sl.totalAmount)} د.ع*\n`;
+  if(sl.interestRate>0){
+    msg+=`🏦 الفائدة (${sl.interestRate}%): *${fmt(sl.interestAmount)} د.ع*\n`;
+    msg+=`💵 الإجمالي مع الفائدة: *${fmt(sl.totalAmount)} د.ع*\n`;
+  }
+  if(sl.downPayment>0)msg+=`✅ الدفعة المقدمة: *${fmt(sl.downPayment)} د.ع*\n`;
+  msg+=`📅 القسط الشهري: *${fmt(sl.installmentAmount)} د.ع*\n`;
+  msg+=`${line}\n`;
+  msg+=`✅ المدفوع: *${fmt(pa)} د.ع* (${paidCount}/${inst.length} قسط)\n`;
+  msg+=`⏳ المتبقي: *${fmt(remaining)} د.ع*\n`;
+  if(nextDue)msg+=`📆 القسط القادم: *${fD(nextDue.dueDate)}* — ${fmt(nextDue.amount)} د.ع\n`;
+  if(lateList.length>0){
+    msg+=`${line}\n`;
+    msg+=`⚠️ *أقساط متأخرة: ${lateList.length}*\n`;
+    lateList.forEach(x=>{
+      const dy=Math.floor((new Date()-new Date(x.dueDate))/864e5);
+      msg+=`  • قسط ${x.num}: ${fD(x.dueDate)} (متأخر ${dy} يوم)\n`;
+    });
+  }
+  msg+=`${line}\n`;
+  msg+=`📋 *جدول الأقساط:*\n`;
+  inst.forEach(x=>{
+    const pm=p.find(z=>z.installmentId===x.id);
+    const st=x.status==='paid'?'✅':isL(x.dueDate)?'⚠️':'🔲';
+    msg+=`${st} قسط ${x.num}: ${fD(x.dueDate)} — ${fmt(x.amount)} د.ع`;
+    if(pm)msg+=` _(دُفع ${fD(pm.paidDate)})_`;
+    msg+='\n';
+  });
+  msg+=`${line}\n_نظام الأقساط_`;
+
+  const encoded=encodeURIComponent(msg);
+  window.open(`https://wa.me/${phone}?text=${encoded}`,'_blank');
+};
 window.openAddSale=function(){
   _eid=null;
   document.getElementById('smtt').textContent='📦 قسط جديد';
