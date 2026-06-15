@@ -15,12 +15,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --pr:#1a6fd4;--pr2:#0ea5e9;--pr3:#0f4fa3;
-  --gr:#22c55e;--am:#f59e0b;--rd:#ef4444;--or:#f97316;--pu:#8b5cf6;
+  --pr:#0000ff;--pr2:#0ea5e9;--pr3:#0f4fa3;
+  --gr:#008000;--am:#ff8c00;--rd:#ff0000;--or:#ff4500;--pu:#8000ff;
   --gl:rgba(255,255,255,.72);--gl2:rgba(255,255,255,.45);
   --bd:rgba(255,255,255,.85);--bd2:rgba(190,215,255,.55);
   --sh:0 4px 24px rgba(26,111,212,.11);--sh2:0 2px 12px rgba(26,111,212,.07);
-  --t:#0f172a;--t2:#334155;--t3:#64748b;--t4:#94a3b8;
+  --t:#000000;--t2:#000000;--t3:#000000;--t4:#000000;
   --r:18px;--r2:13px;
   --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);
 }
@@ -40,7 +40,7 @@ body::before{
 
 /* bars */
 .bar{position:fixed;top:0;left:0;right:0;height:42px;display:flex;align-items:center;justify-content:center;gap:8px;
-  font-size:13px;font-weight:700;color:#fff;z-index:8000;
+  font-size:14px;font-weight:700;color:#fff;z-index:8000;
   transform:translateY(-100%);transition:transform .35s cubic-bezier(.34,1.56,.64,1);
   padding-top:var(--st);}
 .bar.show{transform:translateY(0);}
@@ -68,24 +68,24 @@ body::before{
 #iov.show #ish{transform:translateY(0);}
 .ih{width:40px;height:4px;background:rgba(26,111,212,.2);border-radius:10px;margin:0 auto 18px;}
 .ii{width:76px;height:76px;border-radius:20px;background:linear-gradient(135deg,#1a6fd4,#0ea5e9);
-  margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:36px;
+  margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:37px;
   box-shadow:0 10px 32px rgba(26,111,212,.38);position:relative;overflow:hidden;}
 .ii::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.28) 0%,transparent 55%);}
-.it{text-align:center;font-size:21px;font-weight:900;color:#0f172a;margin-bottom:4px;}
-.is{text-align:center;font-size:13px;color:#64748b;margin-bottom:18px;}
+.it{text-align:center;font-size:22px;font-weight:900;color:#000000;margin-bottom:4px;}
+.is{text-align:center;font-size:14px;color:#000000;margin-bottom:18px;}
 .ifs{display:flex;flex-direction:column;gap:9px;margin-bottom:18px;}
 .if{display:flex;align-items:center;gap:11px;padding:11px 13px;
   background:rgba(26,111,212,.05);border:1px solid rgba(26,111,212,.1);border-radius:12px;}
-.ific{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.ific{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
 .ific.b{background:rgba(26,111,212,.12);}.ific.g{background:rgba(34,197,94,.12);}.ific.a{background:rgba(245,158,11,.12);}
-.if h4{font-size:13px;font-weight:700;color:#1e293b;}.if p{font-size:11px;color:#64748b;margin-top:1px;}
+.if h4{font-size:14px;font-weight:700;color:#000000;}.if p{font-size:12px;color:#000000;margin-top:1px;}
 .ib{width:100%;height:50px;background:linear-gradient(135deg,#1a6fd4,#0ea5e9);border:none;border-radius:14px;
-  font-family:'Tajawal',sans-serif;font-size:16px;font-weight:800;color:#fff;cursor:pointer;
+  font-family:'Tajawal',sans-serif;font-size:17px;font-weight:800;color:#fff;cursor:pointer;
   display:flex;align-items:center;justify-content:center;gap:8px;
   box-shadow:0 6px 24px rgba(26,111,212,.38);margin-bottom:9px;transition:all .2s;}
 .ib:active{transform:scale(.97);}
 .id{width:100%;height:38px;background:transparent;border:none;font-family:'Tajawal',sans-serif;
-  font-size:13px;color:#94a3b8;cursor:pointer;}
+  font-size:14px;color:#000000;cursor:pointer;}
 
 /* layout */
 #app{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh;padding-top:var(--st);}
@@ -98,24 +98,24 @@ body::before{
 .logo{display:flex;align-items:center;gap:10px;}
 .lic{width:40px;height:40px;background:linear-gradient(135deg,#1a6fd4,#0ea5e9);
   border-radius:11px;display:flex;align-items:center;justify-content:center;
-  font-size:20px;box-shadow:0 4px 12px rgba(26,111,212,.3);flex-shrink:0;}
-.ln{font-size:17px;font-weight:900;color:var(--pr);}
-.ls{font-size:10px;color:var(--t3);}
+  font-size:21px;box-shadow:0 4px 12px rgba(26,111,212,.3);flex-shrink:0;}
+.ln{font-size:18px;font-weight:900;color:var(--pr);}
+.ls{font-size:11px;color:var(--t3);}
 .ta{display:flex;align-items:center;gap:7px;}
 #imb{display:none;align-items:center;gap:5px;height:32px;padding:0 11px;
   background:rgba(26,111,212,.1);border:1.5px solid rgba(26,111,212,.3);border-radius:9px;
-  font-family:'Tajawal',sans-serif;font-size:12px;font-weight:700;color:var(--pr);cursor:pointer;
+  font-family:'Tajawal',sans-serif;font-size:13px;font-weight:700;color:var(--pr);cursor:pointer;
   animation:ip 2.5s infinite;}
 #imb.on{display:flex;}
 @keyframes ip{0%,100%{box-shadow:0 0 0 0 rgba(26,111,212,.3)}50%{box-shadow:0 0 0 5px rgba(26,111,212,0)}}
 .tb{height:32px;padding:0 11px;background:var(--gl2);border:1px solid var(--bd2);border-radius:9px;
-  font-family:'Tajawal',sans-serif;font-size:13px;font-weight:600;color:var(--t2);
+  font-family:'Tajawal',sans-serif;font-size:14px;font-weight:600;color:var(--t2);
   cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;white-space:nowrap;}
 .tb:active{background:var(--gl);color:var(--pr);}
 .tb.pr{background:var(--pr);color:#fff;border-color:var(--pr);box-shadow:0 3px 10px rgba(26,111,212,.28);}
 #pb{display:none;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;
   background:rgba(245,158,11,.14);border:1px solid rgba(245,158,11,.3);
-  font-size:11px;font-weight:700;color:#d97706;}
+  font-size:12px;font-weight:700;color:#ff8c00;}
 #pb.on{display:flex;}
 
 /* stats */
@@ -125,13 +125,13 @@ body::before{
 .sc{background:var(--gl);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
   border:1px solid var(--bd);border-radius:var(--r2);padding:12px 13px;
   box-shadow:var(--sh2);display:flex;align-items:center;gap:9px;}
-.si{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.si{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
 .si.b{background:rgba(26,111,212,.12);}.si.g{background:rgba(34,197,94,.12);}
 .si.a{background:rgba(245,158,11,.12);}.si.r{background:rgba(239,68,68,.12);}
 .si.p{background:rgba(139,92,246,.12);}.si.s{background:rgba(14,165,233,.12);}
-.sl{font-size:10px;color:var(--t3);font-weight:500;}
-.sv{font-size:18px;font-weight:900;color:var(--t);line-height:1.2;}
-.ss{font-size:10px;color:var(--t4);}
+.sl{font-size:11px;color:var(--t3);font-weight:500;}
+.sv{font-size:19px;font-weight:900;color:var(--t);line-height:1.2;}
+.ss{font-size:11px;color:var(--t4);}
 
 /* main */
 .main{flex:1;padding:12px 12px 76px;}
@@ -141,7 +141,7 @@ body::before{
   scrollbar-width:none;-webkit-overflow-scrolling:touch;}
 .tabs::-webkit-scrollbar{display:none;}
 .tab{flex-shrink:0;height:35px;padding:0 13px;border:none;border-radius:10px;
-  background:transparent;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:600;
+  background:transparent;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:600;
   color:var(--t3);cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;}
 .tab.on{background:var(--gl);color:var(--pr);box-shadow:0 2px 10px rgba(26,111,212,.12);border:1px solid var(--bd);}
 .panel{display:none;}.panel.on{display:block;}
@@ -152,23 +152,23 @@ body::before{
 .sw input{width:100%;height:40px;padding:0 13px 0 36px;background:var(--gl);
   backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   border:1px solid var(--bd2);border-radius:11px;
-  font-family:'Tajawal',sans-serif;font-size:14px;color:var(--t);outline:none;}
+  font-family:'Tajawal',sans-serif;font-size:15px;color:var(--t);outline:none;}
 .sw input:focus{border-color:var(--pr);box-shadow:0 0 0 3px rgba(26,111,212,.1);}
 .sw input::placeholder{color:var(--t4);}
-.swi{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--t4);pointer-events:none;}
+.swi{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:15px;color:var(--t4);pointer-events:none;}
 select.flt{height:40px;padding:0 11px;background:var(--gl);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  border:1px solid var(--bd2);border-radius:11px;font-family:'Tajawal',sans-serif;font-size:13px;color:var(--t);cursor:pointer;outline:none;}
+  border:1px solid var(--bd2);border-radius:11px;font-family:'Tajawal',sans-serif;font-size:14px;color:var(--t);cursor:pointer;outline:none;}
 
 /* buttons */
 .btn{height:40px;padding:0 15px;border:none;border-radius:11px;
-  font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;cursor:pointer;
+  font-family:'Tajawal',sans-serif;font-size:15px;font-weight:700;cursor:pointer;
   display:inline-flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap;}
 .btn:active{transform:scale(.96);}
 .bpr{background:var(--pr);color:#fff;box-shadow:0 3px 12px rgba(26,111,212,.28);}
 .bgr{background:var(--gr);color:#fff;box-shadow:0 3px 10px rgba(34,197,94,.25);}
 .brd{background:var(--rd);color:#fff;}
 .bgh{background:var(--gl2);border:1px solid var(--bd2);color:var(--t2);}
-.bsm{height:31px;padding:0 10px;font-size:12px;border-radius:8px;}
+.bsm{height:31px;padding:0 10px;font-size:13px;border-radius:8px;}
 
 /* cards */
 .cl{display:flex;flex-direction:column;gap:10px;}
@@ -177,16 +177,16 @@ select.flt{height:40px;padding:0 11px;background:var(--gl);backdrop-filter:blur(
 .ic.late{border-right:3px solid var(--rd);}
 .ic.done{opacity:.72;}
 .ich{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;}
-.ict{font-size:15px;font-weight:800;color:var(--t);line-height:1.3;}
-.ics{font-size:12px;color:var(--t3);margin-top:2px;}
+.ict{font-size:16px;font-weight:800;color:var(--t);line-height:1.3;}
+.ics{font-size:13px;color:var(--t3);margin-top:2px;}
 .icg{display:grid;grid-template-columns:1fr 1fr;gap:7px 12px;margin-bottom:10px;}
-.ifl{font-size:11px;color:var(--t4);font-weight:500;}
-.ifv{font-size:13px;font-weight:700;color:var(--t2);}
-.ifv.big{font-size:15px;color:var(--pr);}
+.ifl{font-size:12px;color:var(--t4);font-weight:500;}
+.ifv{font-size:14px;font-weight:700;color:var(--t2);}
+.ifv.big{font-size:16px;color:var(--pr);}
 .ifv.gr{color:var(--gr);}.ifv.rd{color:var(--rd);}.ifv.am{color:var(--am);}
 .pw{margin-bottom:10px;}
 .pl{display:flex;justify-content:space-between;margin-bottom:4px;}
-.pl span{font-size:11px;color:var(--t4);}
+.pl span{font-size:12px;color:var(--t4);}
 .pb2{height:7px;background:rgba(200,220,255,.38);border-radius:10px;overflow:hidden;}
 .pf{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--pr),var(--pr2));transition:width .4s;}
 .pf.g{background:linear-gradient(90deg,var(--gr),#4ade80);}
@@ -194,16 +194,16 @@ select.flt{height:40px;padding:0 11px;background:var(--gl);backdrop-filter:blur(
 .ica{display:flex;gap:7px;flex-wrap:wrap;}
 
 /* badge */
-.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;}
-.bgr2{background:rgba(34,197,94,.13);color:#16a34a;}
-.brd2{background:rgba(239,68,68,.13);color:#dc2626;}
-.bam{background:rgba(245,158,11,.13);color:#d97706;}
-.bbl{background:rgba(26,111,212,.13);color:#1d4ed8;}
-.bgy{background:rgba(148,163,184,.13);color:#64748b;}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:12px;font-weight:700;}
+.bgr2{background:rgba(34,197,94,.13);color:#008000;}
+.brd2{background:rgba(239,68,68,.13);color:#ff0000;}
+.bam{background:rgba(245,158,11,.13);color:#ff8c00;}
+.bbl{background:rgba(26,111,212,.13);color:#0000ff;}
+.bgy{background:rgba(148,163,184,.13);color:#000000;}
 
 /* avatar */
 .av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--pr),var(--pr2));
-  display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;flex-shrink:0;}
+  display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700;flex-shrink:0;}
 
 /* modal */
 .mo{position:fixed;inset:0;background:rgba(15,23,42,.45);
@@ -226,19 +226,19 @@ select.flt{height:40px;padding:0 11px;background:var(--gl);backdrop-filter:blur(
 @media(min-width:600px){.mh2{display:none;}}
 .mhd{padding:14px 18px 0;display:flex;align-items:center;justify-content:space-between;
   border-bottom:1px solid var(--bd2);padding-bottom:13px;}
-.mtt{font-size:17px;font-weight:900;color:var(--t);}
+.mtt{font-size:18px;font-weight:900;color:var(--t);}
 .mcl{width:32px;height:32px;border-radius:9px;border:1px solid var(--bd2);background:var(--gl2);
-  cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--t3);}
+  cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--t3);}
 .mcl:active{background:var(--rd);color:#fff;border-color:var(--rd);}
 .mb{padding:15px 18px;}
 .mf{padding:13px 18px 16px;display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--bd2);}
 
 /* form */
 .fg{display:flex;flex-direction:column;gap:6px;margin-bottom:12px;}
-.fl{font-size:13px;font-weight:700;color:var(--t2);}
+.fl{font-size:14px;font-weight:700;color:var(--t2);}
 .fc{height:44px;padding:0 13px;background:rgba(255,255,255,.75);
   border:1.5px solid var(--bd2);border-radius:11px;
-  font-family:'Tajawal',sans-serif;font-size:14px;color:var(--t);outline:none;transition:all .15s;}
+  font-family:'Tajawal',sans-serif;font-size:15px;color:var(--t);outline:none;transition:all .15s;}
 .fc:focus{border-color:var(--pr);box-shadow:0 0 0 3px rgba(26,111,212,.1);background:#fff;}
 .fc::placeholder{color:var(--t4);}
 textarea.fc{height:auto;padding:11px 13px;resize:vertical;min-height:68px;}
@@ -247,9 +247,9 @@ textarea.fc{height:auto;padding:11px 13px;resize:vertical;min-height:68px;}
   border-radius:12px;padding:13px;margin-bottom:12px;}
 .cr{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(26,111,212,.07);}
 .cr:last-child{border-bottom:none;padding-top:8px;}
-.crl{font-size:13px;color:var(--t3);}
-.crv{font-size:14px;font-weight:800;color:var(--pr);}
-.crv.big{font-size:18px;color:#0f172a;}
+.crl{font-size:14px;color:var(--t3);}
+.crv{font-size:15px;font-weight:800;color:var(--pr);}
+.crv.big{font-size:19px;color:#000000;}
 
 /* schedule */
 .sl2{display:flex;flex-direction:column;gap:6px;}
@@ -258,39 +258,39 @@ textarea.fc{height:auto;padding:11px 13px;resize:vertical;min-height:68px;}
 .si2.paid{background:rgba(34,197,94,.06);border-color:rgba(34,197,94,.2);}
 .si2.late{background:rgba(239,68,68,.04);border-color:rgba(239,68,68,.2);}
 .sn{width:24px;height:24px;border-radius:50%;background:rgba(26,111,212,.1);
-  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--pr);flex-shrink:0;}
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--pr);flex-shrink:0;}
 .sinfo{flex:1;min-width:0;}
-.sdt{font-size:13px;font-weight:700;color:var(--t);}
-.sam{font-size:12px;color:var(--t3);}
+.sdt{font-size:14px;font-weight:700;color:var(--t);}
+.sam{font-size:13px;color:var(--t3);}
 
 /* overview */
 .og{display:flex;flex-direction:column;gap:11px;}
 @media(min-width:700px){.og{display:grid;grid-template-columns:1fr 1fr;}}
 .oc{background:var(--gl);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
   border:1px solid var(--bd);border-radius:var(--r);padding:15px;box-shadow:var(--sh2);}
-.ott{font-size:14px;font-weight:800;color:var(--t);margin-bottom:11px;display:flex;align-items:center;gap:7px;}
+.ott{font-size:15px;font-weight:800;color:var(--t);margin-bottom:11px;display:flex;align-items:center;gap:7px;}
 .di{display:flex;align-items:center;gap:9px;padding:9px 11px;
   background:rgba(255,255,255,.5);border:1px solid var(--bd2);border-radius:11px;margin-bottom:7px;}
 .di:last-child{margin-bottom:0;}
 .di.u{border-right:3px solid var(--rd);}
 .di.s{border-right:3px solid var(--am);}
 .din{flex:1;min-width:0;}
-.dn{font-size:14px;font-weight:700;color:var(--t);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.dm{font-size:11px;color:var(--t4);margin-top:2px;}
-.da{font-size:15px;font-weight:800;color:var(--pr);white-space:nowrap;}
+.dn{font-size:15px;font-weight:700;color:var(--t);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dm{font-size:12px;color:var(--t4);margin-top:2px;}
+.da{font-size:16px;font-weight:800;color:var(--pr);white-space:nowrap;}
 
 /* chart */
 .chart{display:flex;align-items:flex-end;gap:5px;height:88px;}
 .cbw{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
 .cbar{width:100%;border-radius:5px 5px 0 0;background:linear-gradient(180deg,var(--pr2),var(--pr));min-height:3px;}
 .cbar.c{background:linear-gradient(180deg,#4ade80,var(--gr));}
-.clb{font-size:10px;color:var(--t4);}
+.clb{font-size:11px;color:var(--t4);}
 
 /* stat rows */
 .sr{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(200,220,255,.2);}
 .sr:last-child{border-bottom:none;}
-.srl{font-size:13px;color:var(--t3);}
-.srv{font-size:14px;font-weight:800;}
+.srl{font-size:14px;color:var(--t3);}
+.srv{font-size:15px;font-weight:800;}
 
 /* toast */
 .tc{position:fixed;bottom:calc(68px + var(--sb));left:12px;right:12px;z-index:8500;
@@ -298,7 +298,7 @@ textarea.fc{height:auto;padding:11px 13px;resize:vertical;min-height:68px;}
 .toast{background:var(--gl);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   border:1px solid var(--bd);border-radius:12px;padding:10px 15px;
   display:flex;align-items:center;gap:7px;box-shadow:0 6px 28px rgba(0,0,0,.1);
-  font-size:14px;font-weight:600;color:var(--t);max-width:380px;width:100%;
+  font-size:15px;font-weight:600;color:var(--t);max-width:380px;width:100%;
   animation:ti .3s ease;pointer-events:all;}
 @keyframes ti{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
 .toast.s{border-right:4px solid var(--gr);}.toast.e{border-right:4px solid var(--rd);}
@@ -311,9 +311,9 @@ textarea.fc{height:auto;padding:11px 13px;resize:vertical;min-height:68px;}
   padding-bottom:var(--sb);box-shadow:0 -4px 20px rgba(26,111,212,.08);}
 .nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:2px;padding:7px 4px;border:none;background:transparent;
-  font-family:'Tajawal',sans-serif;font-size:10px;font-weight:600;color:var(--t4);
+  font-family:'Tajawal',sans-serif;font-size:11px;font-weight:600;color:var(--t4);
   cursor:pointer;transition:all .15s;min-height:54px;}
-.nb .ni{font-size:20px;transition:transform .15s;}
+.nb .ni{font-size:21px;transition:transform .15s;}
 .nb.on{color:var(--pr);}
 .nb.on .ni{transform:scale(1.15);}
 @media(max-width:599px){.dtabs{display:none;}.bnav{display:flex;}}
@@ -321,9 +321,9 @@ textarea.fc{height:auto;padding:11px 13px;resize:vertical;min-height:68px;}
 
 /* empty */
 .empty{text-align:center;padding:36px 16px;color:var(--t3);}
-.ei{font-size:42px;margin-bottom:11px;}
-.empty h3{font-size:15px;font-weight:700;color:var(--t2);margin-bottom:5px;}
-.empty p{font-size:13px;color:var(--t4);}
+.ei{font-size:43px;margin-bottom:11px;}
+.empty h3{font-size:16px;font-weight:700;color:var(--t2);margin-bottom:5px;}
+.empty p{font-size:14px;color:var(--t4);}
 
 /* spinner */
 .spin{width:17px;height:17px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;
@@ -353,27 +353,27 @@ textarea.fc{height:auto;padding:11px 13px;resize:vertical;min-height:68px;}
     direction:rtl;
     padding:12px 16px;
     width:100%;
-    color:#0f172a;
+    color:#000000;
     page-break-after:avoid;
     page-break-inside:avoid;
   }
   .pr-head{text-align:center;padding-bottom:10px;border-bottom:2.5px solid #1a6fd4;margin-bottom:12px;}
-  .pr-logo{font-size:30px;margin-bottom:4px;}
-  .pr-title{font-size:22px;font-weight:900;color:#0f172a;}
-  .pr-sub{font-size:13px;color:#64748b;margin-top:3px;}
+  .pr-logo{font-size:31px;margin-bottom:4px;}
+  .pr-title{font-size:23px;font-weight:900;color:#000000;}
+  .pr-sub{font-size:14px;color:#000000;margin-top:3px;}
   .pr-info{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px;}
   .pr-box{border:1.5px solid #e2e8f0;border-radius:7px;padding:7px 9px;text-align:center;}
-  .pr-box-lbl{font-size:11px;color:#64748b;font-weight:600;}
-  .pr-box-val{font-size:16px;font-weight:900;color:#0f172a;margin-top:2px;}
+  .pr-box-lbl{font-size:12px;color:#000000;font-weight:600;}
+  .pr-box-val{font-size:17px;font-weight:900;color:#000000;margin-top:2px;}
   .pr-tbl{width:100%;border-collapse:collapse;margin-top:4px;}
-  .pr-tbl th{background:#f1f5f9;padding:8px 10px;font-size:13px;font-weight:700;color:#475569;text-align:right;border:1px solid #cbd5e1;}
-  .pr-tbl td{padding:7px 10px;font-size:13px;border:1px solid #e2e8f0;vertical-align:middle;}
+  .pr-tbl th{background:#f1f5f9;padding:8px 10px;font-size:14px;font-weight:700;color:#000000;text-align:right;border:1px solid #cbd5e1;}
+  .pr-tbl td{padding:7px 10px;font-size:14px;border:1px solid #e2e8f0;vertical-align:middle;}
   .pr-tbl .pr-paid td{background:#f0fdf4;}
-  .pr-tbl .pr-paid td:first-child{color:#16a34a;font-weight:700;}
+  .pr-tbl .pr-paid td:first-child{color:#008000;font-weight:700;}
   .pr-tbl .pr-late td{background:#fff7f7;}
-  .pr-tbl .pr-late td:first-child{color:#dc2626;font-weight:700;}
-  .pr-tbl .pr-pending td:first-child{color:#64748b;}
-  .pr-footer{margin-top:11px;text-align:center;font-size:11px;color:#94a3b8;border-top:1px solid #e2e8f0;padding-top:8px;}
+  .pr-tbl .pr-late td:first-child{color:#ff0000;font-weight:700;}
+  .pr-tbl .pr-pending td:first-child{color:#000000;}
+  .pr-footer{margin-top:11px;text-align:center;font-size:12px;color:#000000;border-top:1px solid #e2e8f0;padding-top:8px;}
   @page{margin:8mm;size:auto;}
 }
 </style>
@@ -450,7 +450,7 @@ textarea.fc{height:auto;padding:11px 13px;resize:vertical;min-height:68px;}
     <!-- SALES -->
     <div id="p-sales" class="panel">
       <div class="bar2">
-        <div class="sw"><span class="swi">🔍</span><input type="text" placeholder="بحث بالاسم أو المادة..." oninput="rSales(this.value)" id="ss"></div>
+        <div class="sw"><span class="swi">🔍</span><input type="text" placeholder="بحث بالاسم أو المادة..." oninput="dRSales(this.value)" id="ss"></div>
         <select class="flt" onchange="rSales()" id="ssf">
           <option value="">كل الحالات</option>
           <option value="active">نشط</option>
@@ -548,7 +548,7 @@ textarea.fc{height:auto;padding:11px 13px;resize:vertical;min-height:68px;}
   <div class="md">
     <div class="mh2"></div>
     <div class="mhd">
-      <div><div class="mtt" id="vmt">تفاصيل القسط</div><div style="font-size:12px;color:var(--t3);margin-top:2px" id="vms"></div></div>
+      <div><div class="mtt" id="vmt">تفاصيل القسط</div><div style="font-size:13px;color:var(--t3);margin-top:2px" id="vms"></div></div>
       <button class="mcl" onclick="cM('viewM')">✕</button>
     </div>
     <div class="mb" id="vmb"></div>
@@ -580,7 +580,7 @@ textarea.fc{height:auto;padding:11px 13px;resize:vertical;min-height:68px;}
   <div class="md">
     <div class="mh2"></div>
     <div class="mhd">
-      <div><div class="mtt">💳 تسجيل دفعة</div><div style="font-size:12px;color:var(--t3);margin-top:2px" id="pms"></div></div>
+      <div><div class="mtt">💳 تسجيل دفعة</div><div style="font-size:13px;color:var(--t3);margin-top:2px" id="pms"></div></div>
       <button class="mcl" onclick="cM('payM')">✕</button>
     </div>
     <div class="mb">
@@ -606,7 +606,7 @@ textarea.fc{height:auto;padding:11px 13px;resize:vertical;min-height:68px;}
 <div class="mo" id="dueM">
   <div class="md">
     <div class="mh2"></div>
-    <div class="mhd"><div><div class="mtt">⏰ مستحق هذا الشهر</div><div style="font-size:12px;color:var(--t3);margin-top:2px" id="dueMSub"></div></div><button class="mcl" onclick="cM('dueM')">✕</button></div>
+    <div class="mhd"><div><div class="mtt">⏰ مستحق هذا الشهر</div><div style="font-size:13px;color:var(--t3);margin-top:2px" id="dueMSub"></div></div><button class="mcl" onclick="cM('dueM')">✕</button></div>
     <div class="mb" id="dueMBody"></div>
     <div class="mf"><button class="btn bgh" onclick="cM('dueM')">إغلاق</button></div>
   </div>
@@ -616,7 +616,7 @@ textarea.fc{height:auto;padding:11px 13px;resize:vertical;min-height:68px;}
 <div class="mo" id="lateM">
   <div class="md">
     <div class="mh2"></div>
-    <div class="mhd"><div><div class="mtt">🔴 الدفعات المتأخرة</div><div style="font-size:12px;color:var(--t3);margin-top:2px" id="lateMSub"></div></div><button class="mcl" onclick="cM('lateM')">✕</button></div>
+    <div class="mhd"><div><div class="mtt">🔴 الدفعات المتأخرة</div><div style="font-size:13px;color:var(--t3);margin-top:2px" id="lateMSub"></div></div><button class="mcl" onclick="cM('lateM')">✕</button></div>
     <div class="mb" id="lateMBody"></div>
     <div class="mf"><button class="btn bgh" onclick="cM('lateM')">إغلاق</button></div>
   </div>
@@ -626,7 +626,7 @@ textarea.fc{height:auto;padding:11px 13px;resize:vertical;min-height:68px;}
 <div class="mo" id="allCustsM">
   <div class="md">
     <div class="mh2"></div>
-    <div class="mhd"><div><div class="mtt">👥 كل الزبائن</div><div style="font-size:12px;color:var(--t3);margin-top:2px" id="allCustsSub"></div></div><button class="mcl" onclick="cM('allCustsM')">✕</button></div>
+    <div class="mhd"><div><div class="mtt">👥 كل الزبائن</div><div style="font-size:13px;color:var(--t3);margin-top:2px" id="allCustsSub"></div></div><button class="mcl" onclick="cM('allCustsM')">✕</button></div>
     <div class="mb">
       <div class="fg" style="margin-bottom:12px"><input type="text" class="fc" placeholder="🔍 بحث سريع..." oninput="filterAllCusts(this.value)" id="allCustsSearch"></div>
       <div id="allCustsBody"></div>
@@ -701,9 +701,15 @@ async function loadAll(){
 window._ref=async function(){
   await loadAll();
   if(window.rStats)rStats();
-  if(window.rOv)rOv();
-  if(window.rSales)rSales();
-  if(window.rCusts)rCusts();
+  const active=document.querySelector('.panel.on')?.id||'';
+  if(active==='p-overview'){if(window.rOv)rOv();}
+  else if(active==='p-sales'){if(window.rSales)rSales();}
+  else if(active==='p-custs'){if(window.rCusts)rCusts();}
+  else{
+    if(window.rOv)rOv();
+    if(window.rSales)rSales();
+    if(window.rCusts)rCusts();
+  }
 };
 await window._ref();
 </script>
@@ -729,6 +735,9 @@ window.sw=function(name,tabEl,navEl){
   document.getElementById('p-'+name)?.classList.add('on');
   if(tabEl)tabEl.classList.add('on');
   if(navEl)navEl.classList.add('on');
+  if(name==='overview'){if(window.rOv)rOv();}
+  else if(name==='sales'){if(window.rSales)rSales();}
+  else if(name==='custs'){if(window.rCusts)rCusts();}
 };
 
 // STATS
@@ -783,25 +792,49 @@ function rOv(){
     <div class="sr"><span class="srl">المتبقي للتحصيل</span><span class="srv" style="color:var(--am)">${fmt(tow)} د.ع</span></div>
     <div class="sr"><span class="srl">أقساط مكتملة</span><span class="srv" style="color:var(--pr)">${done}</span></div>
     <div style="margin-top:9px">
-      <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:12px;color:var(--t4)">نسبة التحصيل</span><span style="font-size:13px;font-weight:800;color:var(--pr)">${pct}%</span></div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:13px;color:var(--t4)">نسبة التحصيل</span><span style="font-size:14px;font-weight:800;color:var(--pr)">${pct}%</span></div>
       <div class="pb2"><div class="pf g" style="width:${pct}%"></div></div>
     </div>`;
 }
 
 // SALES LIST
+let _rsTimer=null;
+window.dRSales=function(v){
+  if(_rsTimer)clearTimeout(_rsTimer);
+  _rsTimer=setTimeout(()=>rSales(v),180);
+};
 window.rSales=function(srch=''){
   const{s,c,i,p}=D();
   srch=srch||document.getElementById('ss')?.value||'';
   const sf=document.getElementById('ssf')?.value||'';
+  // group installments by saleId once (O(n)) instead of filtering per-sale (O(n*m))
+  const instBySale=new Map();
+  for(const x of i){
+    let arr=instBySale.get(x.saleId);
+    if(!arr){arr=[];instBySale.set(x.saleId,arr);}
+    arr.push(x);
+  }
+  // group payments by installmentId once
+  const payByInst=new Map();
+  for(const x of p){
+    let arr=payByInst.get(x.installmentId);
+    if(!arr){arr=[];payByInst.set(x.installmentId,arr);}
+    arr.push(x);
+  }
+  const custById=new Map();for(const x of c)custById.set(x.id,x);
   let list=s;
-  if(srch)list=list.filter(x=>{const cu=c.find(z=>z.id===x.customerId)||{};return(cu.name||'').includes(srch)||(x.itemName||'').includes(srch);});
+  if(srch)list=list.filter(x=>{const cu=custById.get(x.customerId)||{};return(cu.name||'').includes(srch)||(x.itemName||'').includes(srch);});
   list=list.map(x=>{
-    const inst=i.filter(z=>z.saleId===x.id);
-    const pc=inst.filter(z=>z.status==='paid').length;
-    const hasL=inst.some(z=>z.status!=='paid'&&isL(z.dueDate));
+    const inst=instBySale.get(x.id)||[];
+    let pc=0,hasL=false,pa=0;
+    for(const z of inst){
+      if(z.status==='paid')pc++;
+      else if(isL(z.dueDate))hasL=true;
+      const pays=payByInst.get(z.id);
+      if(pays)for(const z2 of pays)pa+=Number(z2.amount||0);
+    }
     const allD=inst.length>0&&pc===inst.length;
     const st=allD?'done':hasL?'late':'active';
-    const pa=p.filter(z=>inst.find(q=>q.id===z.installmentId)).reduce((a,z)=>a+Number(z.amount||0),0);
     const pct=inst.length?Math.round(pc/inst.length*100):0;
     return{...x,st,pc,ti:inst.length,pa,pct,inst};
   });
@@ -810,21 +843,21 @@ window.rSales=function(srch=''){
   const el=document.getElementById('salesL');
   if(!list.length){el.innerHTML='<div class="empty"><div class="ei">📦</div><h3>لا توجد أقساط</h3><p>أضف قسطاً جديداً للبدء</p></div>';return;}
   el.innerHTML=list.map(x=>{
-    const cu=c.find(z=>z.id===x.customerId)||{};
+    const cu=custById.get(x.customerId)||{};
     const bd=x.st==='done'?'<span class="badge bgr2">✅ مكتمل</span>':x.st==='late'?'<span class="badge brd2">⚠️ متأخر</span>':'<span class="badge bbl">🔵 نشط</span>';
     const nd=x.inst.filter(z=>z.status!=='paid').sort((a,b)=>new Date(a.dueDate)-new Date(b.dueDate))[0];
     const hasInt=x.interestRate>0;
     return`<div class="ic${x.st==='late'?' late':x.st==='done'?' done':''}">
       <div class="ich">
         <div>
-          <div class="ict" style="color:#000;font-weight:900;font-size:16px">${cu.name||'—'} ${cu.phone?`<span style="color:#000;font-weight:700;font-size:13px">• ${cu.phone}</span>`:''}</div>
-          <div class="ics" style="margin-top:3px">📦 ${x.itemName||'—'} <span style="font-size:11px;color:var(--t4)">${x.category||''}</span></div>
+          <div class="ict" style="color:#000;font-weight:900;font-size:17px">${cu.name||'—'} ${cu.phone?`<span style="color:#000;font-weight:700;font-size:14px">• ${cu.phone}</span>`:''}</div>
+          <div class="ics" style="margin-top:3px">📦 ${x.itemName||'—'} <span style="font-size:12px;color:var(--t4)">${x.category||''}</span></div>
         </div>
         ${bd}
       </div>
       <div class="icg">
         <div><div class="ifl">السعر الأصلي</div><div class="ifv">${fmt(x.basePrice||x.totalAmount)} د.ع</div></div>
-        <div><div class="ifl">السعر الإجمالي${hasInt?` <span style="color:var(--or);font-size:10px">(+${x.interestRate}%)</span>`:''}</div><div class="ifv big">${fmt(x.totalAmount)} د.ع</div></div>
+        <div><div class="ifl">السعر الإجمالي${hasInt?` <span style="color:var(--or);font-size:11px">(+${x.interestRate}%)</span>`:''}</div><div class="ifv big">${fmt(x.totalAmount)} د.ع</div></div>
         <div><div class="ifl">القسط الشهري</div><div class="ifv big">${fmt(x.installmentAmount)} د.ع</div></div>
         <div><div class="ifl">المحصّل</div><div class="ifv gr">${fmt(x.pa)} د.ع</div></div>
         <div><div class="ifl">${x.st==='late'?'<span style="color:var(--rd)">آخر قسط متأخر</span>':'القسط القادم'}</div><div class="ifv ${x.st==='late'?'rd':'am'}">${nd?fD(nd.dueDate):'—'}</div></div>
@@ -860,9 +893,9 @@ window.viewSale=function(id){
   document.getElementById('vms').textContent=`${cu.name||''} ${cu.phone?'• '+cu.phone:''}`;
   document.getElementById('vmb').innerHTML=`
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:14px">
-      <div class="sc" style="padding:10px"><div class="si b" style="width:32px;height:32px;font-size:15px">💰</div><div><div class="sl">الكلي</div><div class="sv" style="font-size:13px">${fmt(sl.totalAmount)}</div></div></div>
-      <div class="sc" style="padding:10px"><div class="si g" style="width:32px;height:32px;font-size:15px">✅</div><div><div class="sl">محصّل</div><div class="sv" style="font-size:13px;color:var(--gr)">${fmt(pa)}</div></div></div>
-      <div class="sc" style="padding:10px"><div class="si a" style="width:32px;height:32px;font-size:15px">⏳</div><div><div class="sl">متبقي</div><div class="sv" style="font-size:13px;color:var(--am)">${fmt(Number(sl.totalAmount)-pa)}</div></div></div>
+      <div class="sc" style="padding:10px"><div class="si b" style="width:32px;height:32px;font-size:16px">💰</div><div><div class="sl">الكلي</div><div class="sv" style="font-size:14px">${fmt(sl.totalAmount)}</div></div></div>
+      <div class="sc" style="padding:10px"><div class="si g" style="width:32px;height:32px;font-size:16px">✅</div><div><div class="sl">محصّل</div><div class="sv" style="font-size:14px;color:var(--gr)">${fmt(pa)}</div></div></div>
+      <div class="sc" style="padding:10px"><div class="si a" style="width:32px;height:32px;font-size:16px">⏳</div><div><div class="sl">متبقي</div><div class="sv" style="font-size:14px;color:var(--am)">${fmt(Number(sl.totalAmount)-pa)}</div></div></div>
     </div>
     <div class="sl2">
       ${inst.map(x=>{const pm=p.find(z=>z.installmentId===x.id);const st=x.status==='paid'?'paid':isL(x.dueDate)?'late':'pending';
@@ -911,7 +944,7 @@ window.printSale=function(){
   document.getElementById('printArea').innerHTML=`
     <div class="pr-head">
       <div class="pr-logo">📦</div>
-      <div class="pr-title">${sl.itemName} <span style="font-size:14px;color:#64748b">${sl.category||''}</span></div>
+      <div class="pr-title">${sl.itemName} <span style="font-size:15px;color:#000000">${sl.category||''}</span></div>
       <div class="pr-sub">
         👤 ${cu.name||'—'} ${cu.phone?`&nbsp;•&nbsp; 📞 ${cu.phone}`:''}
         &nbsp;•&nbsp; تاريخ الطباعة: ${fD(tod())}
@@ -924,11 +957,11 @@ window.printSale=function(){
       </div>
       ${hasInt?`<div class="pr-box">
         <div class="pr-box-lbl">الفائدة (${sl.interestRate}%)</div>
-        <div class="pr-box-val" style="color:#f97316">+${fmt(sl.interestAmount)} د.ع</div>
+        <div class="pr-box-val" style="color:#ff4500">+${fmt(sl.interestAmount)} د.ع</div>
       </div>`:'<div class="pr-box"><div class="pr-box-lbl">الفائدة</div><div class="pr-box-val">لا يوجد</div></div>'}
       <div class="pr-box">
         <div class="pr-box-lbl">السعر الإجمالي</div>
-        <div class="pr-box-val" style="color:#1a6fd4">${fmt(sl.totalAmount)} د.ع</div>
+        <div class="pr-box-val" style="color:#0000ff">${fmt(sl.totalAmount)} د.ع</div>
       </div>
       <div class="pr-box">
         <div class="pr-box-lbl">الدفعة المقدمة</div>
@@ -936,15 +969,15 @@ window.printSale=function(){
       </div>
       <div class="pr-box">
         <div class="pr-box-lbl">القسط الشهري</div>
-        <div class="pr-box-val" style="color:#1a6fd4">${fmt(sl.installmentAmount)} د.ع</div>
+        <div class="pr-box-val" style="color:#0000ff">${fmt(sl.installmentAmount)} د.ع</div>
       </div>
       <div class="pr-box">
         <div class="pr-box-lbl">المحصّل</div>
-        <div class="pr-box-val" style="color:#22c55e">${fmt(pa)} د.ع</div>
+        <div class="pr-box-val" style="color:#008000">${fmt(pa)} د.ع</div>
       </div>
       <div class="pr-box">
         <div class="pr-box-lbl">المتبقي</div>
-        <div class="pr-box-val" style="color:#f59e0b">${fmt(remaining)} د.ع</div>
+        <div class="pr-box-val" style="color:#ff8c00">${fmt(remaining)} د.ع</div>
       </div>
       <div class="pr-box">
         <div class="pr-box-lbl">مدفوع / الكلي</div>
@@ -1134,7 +1167,7 @@ window.showDueModal=function(){
     return`<div class="di ${isLate2?'u':'s'}" style="margin-bottom:8px">
       <div class="av" style="${isLate2?'background:linear-gradient(135deg,#ef4444,#f97316)':''}">${ini(cu.name)}</div>
       <div class="din">
-        <div class="dn" style="color:#000;font-weight:900">${cu.name||'—'} ${cu.phone?`<span style="color:#000;font-weight:700;font-size:12px">• ${cu.phone}</span>`:''}</div>
+        <div class="dn" style="color:#000;font-weight:900">${cu.name||'—'} ${cu.phone?`<span style="color:#000;font-weight:700;font-size:13px">• ${cu.phone}</span>`:''}</div>
         <div class="dm">📦 ${sl.itemName||'—'} • قسط ${x.num} • ${fD(x.dueDate)} ${isLate2?'<span style="color:var(--rd)">⚠️ متأخر</span>':''}</div>
       </div>
       <div>
@@ -1168,24 +1201,24 @@ window.showLateModal=function(){
         <div style="display:flex;align-items:center;gap:9px">
           <div class="av" style="background:linear-gradient(135deg,#ef4444,#f97316)">${ini(g.cu.name)}</div>
           <div>
-            <div style="font-size:15px;font-weight:900;color:#000">${g.cu.name||'—'}</div>
-            <div style="font-size:12px;color:#000;font-weight:700">${g.cu.phone||''}</div>
+            <div style="font-size:16px;font-weight:900;color:#000">${g.cu.name||'—'}</div>
+            <div style="font-size:13px;color:#000;font-weight:700">${g.cu.phone||''}</div>
           </div>
         </div>
         <div style="text-align:left">
-          <div style="font-size:11px;color:var(--t4)">${g.items.length} قسط متأخر</div>
-          <div style="font-size:14px;font-weight:800;color:var(--rd)">${fmt(total)} د.ع</div>
+          <div style="font-size:12px;color:var(--t4)">${g.items.length} قسط متأخر</div>
+          <div style="font-size:15px;font-weight:800;color:var(--rd)">${fmt(total)} د.ع</div>
         </div>
       </div>
       ${g.items.map(x=>{
         const dy=Math.floor((new Date()-new Date(x.dueDate))/864e5);
         return`<div style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:rgba(239,68,68,.06);border-radius:9px;margin-bottom:5px;gap:8px">
           <div>
-            <div style="font-size:13px;font-weight:700">📦 ${x.itemName||'—'} — قسط ${x.num}</div>
-            <div style="font-size:11px;color:var(--rd)">${fD(x.dueDate)} • متأخر ${dy} يوم</div>
+            <div style="font-size:14px;font-weight:700">📦 ${x.itemName||'—'} — قسط ${x.num}</div>
+            <div style="font-size:12px;color:var(--rd)">${fD(x.dueDate)} • متأخر ${dy} يوم</div>
           </div>
           <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-            <span style="font-size:13px;font-weight:800;color:var(--rd)">${fmt(x.amount)} د.ع</span>
+            <span style="font-size:14px;font-weight:800;color:var(--rd)">${fmt(x.amount)} د.ع</span>
             <button class="btn bgr bsm" onclick="opPayI('${x.id}');cM('lateM')">💳 دفع</button>
           </div>
         </div>`;
@@ -1217,8 +1250,8 @@ function renderAllCusts(list){
         <div class="dm" style="color:#000;font-weight:600">${x.phone||''} ${cs.length?`• ${cs.length} أقساط`:''}</div>
       </div>
       <div style="text-align:left">
-        ${db>0?`<div style="font-size:12px;font-weight:800;color:var(--am)">${fmt(db)} د.ع</div>`:'<div style="font-size:11px;color:var(--gr)">✅ مسدد</div>'}
-        ${hasLate?'<div style="font-size:11px;color:var(--rd);font-weight:700">⚠️ متأخر</div>':''}
+        ${db>0?`<div style="font-size:13px;font-weight:800;color:var(--am)">${fmt(db)} د.ع</div>`:'<div style="font-size:12px;color:var(--gr)">✅ مسدد</div>'}
+        ${hasLate?'<div style="font-size:12px;color:var(--rd);font-weight:700">⚠️ متأخر</div>':''}
       </div>
     </div>`;
   }).join(''):'<div class="empty"><p>لا يوجد زبائن</p></div>';
@@ -1284,18 +1317,37 @@ window.rCusts=function(srch=''){
   if(srch)list=list.filter(x=>(x.name||'').includes(srch)||(x.phone||'').includes(srch));
   const el=document.getElementById('custsL');
   if(!list.length){el.innerHTML='<div class="empty"><div class="ei">👥</div><h3>لا يوجد زبائن</h3></div>';return;}
+  // group sales by customerId once
+  const salesByCust=new Map();
+  for(const z of s){
+    let arr=salesByCust.get(z.customerId);
+    if(!arr){arr=[];salesByCust.set(z.customerId,arr);}
+    arr.push(z);
+  }
+  // group unpaid installments by saleId once
+  const unpaidBySale=new Map();
+  for(const q of i){
+    if(q.status==='paid')continue;
+    let arr=unpaidBySale.get(q.saleId);
+    if(!arr){arr=[];unpaidBySale.set(q.saleId,arr);}
+    arr.push(q);
+  }
   el.innerHTML=list.map(x=>{
-    const cs=s.filter(z=>z.customerId===x.id);
-    const db=cs.reduce((a,z)=>{const ins=i.filter(q=>q.saleId===z.id&&q.status!=='paid');return a+ins.reduce((b,q)=>b+Number(q.amount||0),0);},0);
+    const cs=salesByCust.get(x.id)||[];
+    let db=0;
+    for(const z of cs){
+      const ins=unpaidBySale.get(z.id);
+      if(ins)for(const q of ins)db+=Number(q.amount||0);
+    }
     return`<div class="ic">
       <div class="ich">
         <div style="display:flex;align-items:center;gap:10px">
-          <div class="av" style="width:44px;height:44px;font-size:16px">${ini(x.name)}</div>
-          <div><div class="ict" style="font-size:16px">${x.name}</div><div class="ics">${x.phone||''} ${x.phone2?'• '+x.phone2:''}</div></div>
+          <div class="av" style="width:44px;height:44px;font-size:17px">${ini(x.name)}</div>
+          <div><div class="ict" style="font-size:17px">${x.name}</div><div class="ics">${x.phone||''} ${x.phone2?'• '+x.phone2:''}</div></div>
         </div>
         <span class="badge bbl">${cs.length} أقساط</span>
       </div>
-      ${x.address?`<div style="font-size:13px;color:var(--t3);margin-bottom:8px">📍 ${x.address}</div>`:''}
+      ${x.address?`<div style="font-size:14px;color:var(--t3);margin-bottom:8px">📍 ${x.address}</div>`:''}
       <div class="icg">
         <div><div class="ifl">المديونية المتبقية</div><div class="ifv ${db>0?'am':'gr'}">${fmt(db)} د.ع</div></div>
         <div><div class="ifl">رقم الهوية</div><div class="ifv">${x.idNum||'—'}</div></div>
@@ -1450,16 +1502,16 @@ function showFbRulesAlert(){
   const d=document.createElement('div');
   d.style.cssText='position:fixed;inset:0;background:rgba(15,23,42,.7);backdrop-filter:blur(10px);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;';
   d.innerHTML=`<div style="background:#fff;border-radius:20px;padding:28px 24px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);font-family:Tajawal,sans-serif;direction:rtl">
-    <div style="font-size:38px;text-align:center;margin-bottom:12px">🔐</div>
-    <div style="font-size:18px;font-weight:900;color:#0f172a;text-align:center;margin-bottom:8px">يجب ضبط قواعد Firebase</div>
-    <div style="font-size:13px;color:#64748b;margin-bottom:18px;line-height:1.7">
+    <div style="font-size:39px;text-align:center;margin-bottom:12px">🔐</div>
+    <div style="font-size:19px;font-weight:900;color:#000000;text-align:center;margin-bottom:8px">يجب ضبط قواعد Firebase</div>
+    <div style="font-size:14px;color:#000000;margin-bottom:18px;line-height:1.7">
       Firebase يرفض الكتابة بسبب Security Rules. لإصلاحه:<br>
-      <b style="color:#1a6fd4">١.</b> افتح <b>console.firebase.google.com</b><br>
-      <b style="color:#1a6fd4">٢.</b> اختر مشروع <b>neonchat-d1422</b><br>
-      <b style="color:#1a6fd4">٣.</b> Firestore Database → <b>Rules</b><br>
-      <b style="color:#1a6fd4">٤.</b> انسخ القواعد أدناه والصقها واضغط <b>Publish</b>
+      <b style="color:#0000ff">١.</b> افتح <b>console.firebase.google.com</b><br>
+      <b style="color:#0000ff">٢.</b> اختر مشروع <b>neonchat-d1422</b><br>
+      <b style="color:#0000ff">٣.</b> Firestore Database → <b>Rules</b><br>
+      <b style="color:#0000ff">٤.</b> انسخ القواعد أدناه والصقها واضغط <b>Publish</b>
     </div>
-    <div style="background:#0f172a;border-radius:10px;padding:12px;font-family:monospace;font-size:12px;color:#4ade80;margin-bottom:16px;user-select:all;direction:ltr">
+    <div style="background:#0f172a;border-radius:10px;padding:12px;font-family:monospace;font-size:13px;color:#008000;margin-bottom:16px;user-select:all;direction:ltr">
 rules_version = '2';<br>
 service cloud.firestore {<br>
 &nbsp;&nbsp;match /databases/{database}/documents {<br>
@@ -1469,8 +1521,8 @@ service cloud.firestore {<br>
 &nbsp;&nbsp;}<br>
 }
     </div>
-    <div style="font-size:11px;color:#94a3b8;margin-bottom:16px;text-align:center">البرنامج يعمل محلياً — البيانات محفوظة على جهازك</div>
-    <button onclick="this.closest('div[style]').remove()" style="width:100%;height:44px;background:linear-gradient(135deg,#1a6fd4,#0ea5e9);border:none;border-radius:12px;color:#fff;font-family:Tajawal,sans-serif;font-size:15px;font-weight:700;cursor:pointer">فهمت ✓</button>
+    <div style="font-size:12px;color:#000000;margin-bottom:16px;text-align:center">البرنامج يعمل محلياً — البيانات محفوظة على جهازك</div>
+    <button onclick="this.closest('div[style]').remove()" style="width:100%;height:44px;background:linear-gradient(135deg,#1a6fd4,#0ea5e9);border:none;border-radius:12px;color:#fff;font-family:Tajawal,sans-serif;font-size:16px;font-weight:700;cursor:pointer">فهمت ✓</button>
   </div>`;
   document.body.appendChild(d);
 }
