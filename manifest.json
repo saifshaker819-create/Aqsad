@@ -2,7 +2,8 @@
   "name": "نظام الأقساط",
   "short_name": "الأقساط",
   "description": "نظام إدارة أقساط الأجهزة الكهربائية والمنزلية",
-  "start_url": "./installments.html",
+  "start_url": "./index.html",
+  "id": "./index.html",
   "display": "standalone",
   "background_color": "#f0f7ff",
   "theme_color": "#1a6fd4",
@@ -11,12 +12,14 @@
   "dir": "rtl",
   "scope": "./",
   "icons": [
-    {"src":"./icons/icon-192.svg","sizes":"192x192","type":"image/svg+xml","purpose":"any maskable"},
-    {"src":"./icons/icon-512.svg","sizes":"512x512","type":"image/svg+xml","purpose":"any maskable"}
+    {"src":"./icons/icon-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"./icons/icon-512.png","sizes":"512x512","type":"image/png","purpose":"any"},
+    {"src":"./icons/icon-192-maskable.png","sizes":"192x192","type":"image/png","purpose":"maskable"},
+    {"src":"./icons/icon-512-maskable.png","sizes":"512x512","type":"image/png","purpose":"maskable"}
   ],
   "shortcuts": [
-    {"name":"قسط جديد","short_name":"جديد","url":"./installments.html#new","icons":[{"src":"./icons/icon-192.svg","sizes":"192x192"}]},
-    {"name":"تسجيل دفعة","short_name":"دفعة","url":"./installments.html#pay","icons":[{"src":"./icons/icon-192.svg","sizes":"192x192"}]}
+    {"name":"قسط جديد","short_name":"جديد","url":"./index.html#new","icons":[{"src":"./icons/icon-192.png","sizes":"192x192","type":"image/png"}]},
+    {"name":"تسجيل دفعة","short_name":"دفعة","url":"./index.html#pay","icons":[{"src":"./icons/icon-192.png","sizes":"192x192","type":"image/png"}]}
   ],
   "prefer_related_applications": false
 }

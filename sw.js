@@ -1,5 +1,5 @@
-const CACHE = 'aqsat-v2';
-const ASSETS = ['./installments.html','./manifest.json','./icons/icon-192.svg','./icons/icon-512.svg'];
+const CACHE = 'aqsat-v3';
+const ASSETS = ['./index.html','./manifest.json','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS).catch(()=>{})).then(()=>self.skipWaiting()));
@@ -27,7 +27,7 @@ self.addEventListener('fetch', e => {
     return fetch(e.request).then(res=>{
       if(res&&res.status===200){caches.open(CACHE).then(c=>c.put(e.request,res.clone()));}
       return res;
-    }).catch(()=>e.request.mode==='navigate'?caches.match('./installments.html'):undefined);
+    }).catch(()=>e.request.mode==='navigate'?caches.match('./index.html'):undefined);
   }));
 });
 
